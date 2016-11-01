@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>hex-validator test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+
+  <link rel="import" href="../hex-input.html">
+</head>
+<body>
+
+  <test-fixture id="hex-input">
+    <template>
+      <hex-input></hex-input>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<hex-input>', function() {
+
+      test('invalid attribute updated after calling validate()', function() {
+        var input = fixture('hex-input');
+        forceXIfStamp(input);
+        input.validate();
+        // var error = Polymer.dom(input.root).querySelector('paper-input-error');
+        // assert.ok(error, 'paper-input-error exists');
+        // assert.notEqual(getComputedStyle(error).display, 'none', 'error is not display:none');
+        assert.isTrue(input.invalid, 'invalid is true');
+        // assert.ok(true, 'blah');
+      });
+
+    });
+  </script>
+
+</body>
+</html>

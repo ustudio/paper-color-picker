@@ -1,0 +1,53 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>hex-validator test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="hex-validatable.html">
+  <link rel="import" href="../hex-validator.html">
+</head>
+<body>
+
+  <test-fixture id="hex-validator">
+    <template>
+      <hex-validator></hex-validator>
+      <hex-validatable></hex-validatable>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<hex-validator>', function() {
+      test('validator works', function () {
+        var node = fixture('hex-validator');
+        var input = node[1];
+
+        input.validator = 'hex-validator';
+
+        assert.isTrue(input.validate('000'));
+        assert.isTrue(input.validate('#000'));
+        assert.isTrue(input.validate('000000'));
+        assert.isTrue(input.validate('#000000'));
+        assert.isTrue(input.validate('Fe0ab8'));
+        assert.isTrue(input.validate('#Fe0ab8'));
+
+        assert.isFalse(input.validate(''));
+        assert.isFalse(input.validate('##000'));
+        assert.isFalse(input.validate('#00000'));
+        assert.isFalse(input.validate('000#000'));
+        assert.isFalse(input.validate('0000'));
+        assert.isFalse(input.validate('00000'));
+        assert.isFalse(input.validate('H00000'));
+        assert.isFalse(input.validate('#Fe0ab82'));
+        assert.isFalse(input.validate('glorp!'));
+      });
+    });
+  </script>
+
+</body>
+</html>

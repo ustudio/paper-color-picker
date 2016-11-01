@@ -1,0 +1,18 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-validator-behavior/iron-validator-behavior.html">
+
+<script>
+  Polymer({
+
+    is: 'hex-validator',
+
+    behaviors: [
+      Polymer.IronValidatorBehavior
+    ],
+
+    validate: function(value) {
+      return value.match(/^#?([a-f0-9]{6}|[a-f0-9]{3})$/i);
+    }
+
+  });
+</script>

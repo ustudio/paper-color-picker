@@ -1,0 +1,73 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+<link rel="import" href="rgb-component-validator.html">
+
+<dom-module id="rgb-component-input">
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      input[is="iron-input"] {
+        font: inherit;
+        outline: none;
+        box-shadow: none;
+        border: none;
+        width: auto;
+        text-align: center;
+      }
+    </style>
+
+    <rgb-component-validator></rgb-component-validator>
+
+    <paper-input-container auto-validate always-float-label>
+      <label for="input">[[ color ]]</label>
+      <input is="iron-input"
+        id="input"
+        type="number"
+        bind-value="{{ value }}"
+        minlength="1"
+        maxlength="3"
+        aria-label="[[ color ]] value from 0 to 255"
+        allowed-pattern="[0-9]"
+        validator="rgb-component-validator"
+        prevent-invalid-input
+      />
+      <paper-input-error>0 - 255</paper-input-error>
+    </paper-input-container>
+
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'rgb-component-input',
+
+    behaviors: [
+      Polymer.PaperInputBehavior
+    ],
+
+    properties: {
+      color: {
+        type: String
+      },
+
+      value: {
+        notify: true,
+        type: Number,
+        value: 0
+      }
+    }
+
+  });
+</script>

@@ -1,0 +1,60 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="rgb-component-input.html">
+
+<dom-module id="rgb-input">
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      .container {
+        @apply(--layout-horizontal);
+        @apply(--layout-around-justified);
+      }
+    </style>
+
+    <div class="container">
+      <template is="dom-repeat" items="{{ colors }}" as="value">
+        <rgb-component-input
+          color="{{ _computeName(index) }}"
+          value="{{ value }}"
+          class="paper-input-input">
+        </rgb-component-input>
+      </template>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'rgb-input',
+
+    properties: {
+      names: {
+        type: Array,
+        value: [ 'Red', 'Green', 'Blue' ],
+        readonly: true
+      },
+
+      colors: {
+        type: Array,
+        notify: true,
+        reflectToAttribute: true
+      }
+    },
+
+    _computeName: function (index) {
+      return this.names[index];
+    }
+
+  });
+</script>

@@ -1,0 +1,79 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+<link rel="import" href="hex-validator.html">
+
+<dom-module id="hex-input">
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      input[is="iron-input"] {
+        font: inherit;
+        outline: none;
+        box-shadow: none;
+        border: none;
+        width: auto;
+        text-align: center;
+      }
+    </style>
+
+    <hex-validator></hex-validator>
+
+    <paper-input-container auto-validate always-float-label>
+      <label for="input" hidden$="[[ !label ]]">[[ label ]]</label>
+      <input is="iron-input"
+        id="input"
+        type="text"
+        bind-value="{{ value }}"
+        autocapitalize="[[ autocapitalize ]]"
+        minlength="4"
+        maxlength="7"
+        aria-label="hex color value"
+        allowed-pattern="[#a-fA-F0-9]"
+        validator="hex-validator"
+        prevent-invalid-input
+      />
+      <paper-input-error>Enter a 3- or 6-digit hex value</paper-input-error>
+    </paper-input-container>
+
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'hex-input',
+
+    behaviors: [
+      Polymer.PaperInputBehavior
+    ],
+
+    properties: {
+      autocapitalize: {
+        type: Boolean,
+        value: true
+      },
+
+      label: {
+        type: String,
+        value: 'Hex Value'
+      },
+
+      value: {
+        type: String,
+        notify: true,
+        reflectToAttribute: true,
+        value: '000'
+      }
+    }
+  });
+</script>

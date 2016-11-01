@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>color-names test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../color-names.html">
+</head>
+<body>
+
+  <test-fixture id="color-names">
+    <template>
+      <color-names></color-names>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<color-names>', function() {
+      var colorNames;
+
+      setup(function() {
+        colorNames = fixture('color-names');
+      });
+
+      test('check closest color matches', function () {
+        assert.equal(colorNames.closestName('#000'), 'Black');
+        assert.equal(colorNames.closestName('#000000'), 'Black');
+        assert.equal(colorNames.closestName('000000'), 'Black');
+        assert.equal(colorNames.closestName('#fe7628'), 'Pumpkin');
+        assert.equal(colorNames.closestName('#868'), 'French Lilac');
+      });
+    });
+  </script>
+
+</body>
+</html>
