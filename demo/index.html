@@ -47,13 +47,61 @@
   <section>
     <h1><code>&lt;paper-color-input&gt;</code></h1>
     <div style="width: 300px;">
-      <paper-color-input label="Pick a color..."></paper-color-input>
-      <paper-color-input value='{"red":255,"green":155,"blue":55}' label="My favourite color"></paper-color-input>
-      <paper-color-input value='{"red":255,"green":155,"blue":55}' shape="huebox" label="Color with hue picker"></paper-color-input>
-      <paper-color-input value='{"red":255,"green":155,"blue":55,"alpha": 0.5}' shape="huebox" label="Color with hue picker and alpha" always-show-alpha allow-alpha></paper-color-input>
-      <paper-color-input value='{"red":0,"green":255,"blue":0}' shape="huebox" label="Color with hue picker"></paper-color-input>
-      <paper-color-input value='{"red":12,"green":34,"blue":56}' shape="square" label="Color with square picker"></paper-color-input>
-      <paper-color-input value='{"red":12,"green":34,"blue":56}' shape="square" label="Input with [with-description]" with-description></paper-color-input>
+
+      <paper-color-input
+        label="Pick a color...">
+      </paper-color-input>
+
+      <paper-color-input
+        label="My favourite color"
+        red="255"
+        green="155"
+        blue="55">
+      </paper-color-input>
+
+      <paper-color-input
+        label="Color with hue picker"
+        shape="huebox"
+        red="255"
+        green="155"
+        blue="55">
+      </paper-color-input>
+
+      <paper-color-input
+        label="Color with hue picker and alpha"
+        shape="huebox"
+        red="255"
+        green="155"
+        blue="55"
+        alpha="0.5"
+        allow-alpha
+        always-show-alpha>
+      </paper-color-input>
+
+      <paper-color-input
+        label="Color with hue picker"
+        shape="huebox"
+        red="0"
+        green="255"
+        blue="0">
+      </paper-color-input>
+
+      <paper-color-input
+        label="Color with square picker"
+        shape="square"
+        red="12"
+        green="34"
+        blue="56">
+      </paper-color-input>
+
+      <paper-color-input
+        label="Input with [with-description]"
+        shape="square"
+        red="12"
+        green="34"
+        blue="56"
+        with-description>
+      </paper-color-input>
     </div>
   </section>
 

@@ -174,21 +174,22 @@
             }
           },
 
-          /**
-           * Picked color
-           *
-           * @attribute color
-           * @type Array
-           * @default new Array(2)
-           */
-          color: {
-            type: Object,
-            notify: true,
-            value: {
-              red: undefined,
-              green: undefined,
-              blue: undefined
-            }
+          red: {
+            type: Number,
+            value: 0,
+            notify: true
+          },
+
+          green: {
+            type: Number,
+            value: 0,
+            notify: true
+          },
+
+          blue: {
+            type: Number,
+            value: 0,
+            notify: true
           },
 
           /**
@@ -239,21 +240,14 @@
             type: Number,
             value: 0,
             notify: true,
-            observer: 'hueChanged'
+            observer: '_redrawIfDomReady'
           },
 
-          /**
-           * In case of hsl, the lightness
-           *
-           * @attribute lightness
-           * @type number
-           * @default .5
-           */
-          lightness: {
+          luminosity: {
             type: Number,
             value: 0.5,
             notify: true,
-            observer: 'lightnessChanged'
+            observer: '_redrawIfDomReady'
           },
 
           /**
@@ -282,23 +276,16 @@
             notify: true
           },
 
-          /**
-           * In case of hsv, the value
-           *
-           * @attribute value
-           * @type number
-           * @default 1
-           */
-          value: {
+          brightness: {
             type: Number,
             value: 1,
             notify: true,
-            observer: 'valueChanged'
+            observer: '_redrawIfDomReady'
           }
         },
 
         observers: [
-          'colorChanged(color.*)'
+          'colorChanged(red, green, blue)'
         ],
 
         behaviors: [
@@ -462,35 +449,30 @@
           this._ctx.stroke();
         },
 
-        valueChanged: function () {
-          if (this._domReady)
-            this.redraw();
-        },
-
-        lightnessChanged: function () {
-          if (this._domReady)
-            this.redraw();
-        },
-
-        hueChanged: function () {
-          if (this._domReady)
-            this.redraw();
+        _redrawIfDomReady: function () {
+          if (this._domReady) this.redraw();
         },
 
         colorChanged: function () {
           if (!this._trackingColorChanges) {
             if (this.type == 'hsl') {
-              var hsl = this.rgb2hsl(parseInt(this.color.red), parseInt(this.color.green), parseInt(this.color.blue));
+              var hsl = this.rgb2hsl(
+                parseInt(this.red),
+                parseInt(this.green),
+                parseInt(this.blue)
+              );
               this.hue = hsl[0];
               this.lightness = hsl[2];
             } else if (this.type == 'hsv') {
-              var hsv = this.rgb2hsv(parseInt(this.color.red), parseInt(this.color.green), parseInt(this.color.blue));
+              var hsv = this.rgb2hsv(
+                parseInt(this.red),
+                parseInt(this.green),
+                parseInt(this.blue)
+              );
               if (!isNaN(hsv[0])) this.hue = hsv[0];
               this.value = hsv[2];
             }
           }
-          //if (this._domReady)
-          //  this.redraw();
         },
 
         attached: function () {

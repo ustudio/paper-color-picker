@@ -28,7 +28,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       #colorPreview {
         height: 16px;
         width: 16px;
-        border: 1px solid rgba(0,0,0,.1);
+        border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 1px;
         margin: 2px;
         position: relative;
@@ -48,7 +48,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       #noColor {
         width: 22.6px;
         height: 1px;
-        border-top: 1px solid rgba(0,0,0,.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
         transform-origin: 0px 0px;
         transform: translateY(15.5px) rotate(-45deg);
       }
@@ -59,7 +59,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 
       span.dark {
         font-size: 11px;
-        color: rgba(0,0,0,.8);
+        color: rgba(0, 0, 0, 0.8);
         font-family: monospace;
         text-transform: uppercase;
       }
@@ -67,36 +67,39 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       span.light {
         font-size: 10px;
         font-family: monospace;
-        color: rgba(0,0,0,.3);
+        color: rgba(0, 0, 0, 0.3);
       }
     </style>
 
-    <paper-input-container id="input" always-float-label="{{ _isValueDefined(value.*) }}">
+    <paper-input-container id="input" always-float-label>
 
-      <label>{{ label }}</label>
+      <label>[[ label ]]</label>
 
       <div class="paper-input-input">
-        <span>{{ colorName }}</span>&nbsp;<!--
+        <span>{{ name }}</span>&nbsp;<!--
         --><template is="dom-if" if="{{ withDescription }}"><!--
           --><span class="light">(</span><!--
-          --><span class="dark">{{ valueAsHex }}</span><!--
+          --><span class="dark">{{ hex }}</span><!--
           --><span class="light">)</span>
            </template>
       </div>
 
       <div id="colorPreview" suffix>
         <div id="color" style$="{{ _computeBackgroundColor(value.*) }}"></div>
-        <div id="noColor" hidden="{{ _isValueDefined(value.*) }}"></div>
       </div>
 
     </paper-input-container>
 
     <paper-color-picker
       id="picker"
-      color="{{ value }}"
-      color-name="{{ colorName }}"
+      red="{{ red }}"
+      green="{{ green }}"
+      blue="{{ blue }}"
+      name="{{ colorName }}"
       shape="{{ shape }}"
       type="{{ type }}"
+      hex="{{ hex }}"
+      alpha="{{ alpha }}"
       allow-alpha="{{ allowAlpha }}"
       always-show-alpha="{{ alwaysShowAlpha }}"></paper-color-picker>
 
@@ -107,19 +110,31 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       is: 'paper-color-input',
 
       properties: {
-        /**
-         * The currently picked color. This is an object with a `red`, `green` and `blue` property.
-         *
-         * @attribute label
-         * @type String
-         * @default ''
-         */
-        value: {
-          type: Object,
+        red: {
+          type: Number,
+          value: 0,
           notify: true
         },
 
-        valueAsHex: {
+        green: {
+          type: Number,
+          value: 0,
+          notify: true
+        },
+
+        blue: {
+          type: Number,
+          value: 0,
+          notify: true
+        },
+
+        alpha: {
+          type: Number,
+          value: 1,
+          notify: true
+        },
+
+        hex: {
           type: String,
           notify: true,
           observer: '_setValueFromHex'
@@ -137,14 +152,11 @@ There are three different main configurations all 3 elements allow: `circle`, `s
           value: ''
         },
 
-        /**
-         * The name of the colour as shown in the input field
-         *
-         * @attribute color-name
-         * @type String
-         * @default ''
-         */
-        colorName: String,
+        name: {
+          type: String,
+          value: '',
+          notify: true
+        },
 
         /**
          * *square*, *circle* or *huebox*
@@ -175,17 +187,26 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         /**
          * Whether to allow changing the transparency of the picked color
          */
-        allowAlpha: Boolean,
+        allowAlpha: {
+          type: Boolean,
+          value: false
+        },
 
         /**
          * Whether to show the color also as a string
          */
-        withDescription: Boolean,
+        withDescription: {
+          type: Boolean,
+          value: false
+        },
 
         /**
          * Show alpha slider always instead of only in the advanced settings
          */
-        alwaysShowAlpha: Boolean,
+        alwaysShowAlpha: {
+          type: Boolean,
+          value: false
+        }
       },
 
       behaviors: [
@@ -198,73 +219,65 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 
       listeners: {
         'input.tap': 'openColorPicker',
-        'immediate-color-changed': 'setColorName'
+        'immediate-color-changed': '_setName'
       },
 
       // Element Lifecycle
       ready: function () {
-        if (this._isValueDefined()){
-          this.$.picker.set('immediateColor', this.value);
-        }
       },
 
-      setColorName: function () {
-        console.log('BOINK:', this.$.picker.immediateColor.name);
-        this.set('colorName', this.$.picker.immediateColor.name);
+      _setName: function () {
+        this.set('name', this.$.picker.name);
         this.$.picker.setColor();
       },
 
-      openColorPicker: function(){
+      openColorPicker: function () {
         this.$.picker.open();
       },
 
-      _computeBackgroundColor: function(){
-        if(!this._isValueDefined()){
-          return 'background: white';
-        }
-        if(typeof this.value.alpha === 'undefined'){
-          this.value.alpha = 1;
-        }
-        return 'background: rgba('+this.value.red+', '+this.value.green+','+this.value.blue+', '+this.value.alpha+')';
+      _computeBackgroundColor: function () {
+        return 'background: rgba(' +
+          this.red + ', ' +
+          this.green + ', ' +
+          this.blue + ', ' +
+          this.alpha + ')';
       },
 
-      _isValueDefined: function(){
-        return this.value.red >= 0 && this.value.green >= 0 && this.value.blue >= 0;
+      // FIXME
+      _setValueAsHexFromValue: function () {
+        var hex = '#';
+        var value = this.value;
+
+        ['red', 'green', 'blue'].forEach(function (c) {
+          var h = value[c].toString(16);
+          l = h.length;
+          hex += l < 2 ? '0' : '';
+          hex += l < 1 ? '0' : '';
+          hex += h;
+        });
+
+        this.set('hex', hex);
       },
 
-      _setValueAsHexFromValue: function(){
-        if(this._isValueDefined()){
-          var hex = '#';
-          var value = this.value;
-          ['red', 'green', 'blue'].forEach(function(c){
-            var h = value[c].toString(16);
-            l = h.length;
-            hex += l < 2 ? '0' : '';
-            hex += l < 1 ? '0' : '';
-            hex += h;
-          });
-          this.set('valueAsHex', hex);
-        }
-      },
-
-      _setValueFromHex: function(){
+      // FIXME
+      _setValueFromHex: function () {
         var hex = this.valueAsHex;
         if (typeof hex != 'string') {
           this.set('value', {});
           return;
         }
         var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-        var hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        var hex = hex.replace(shorthandRegex, function (m, r, g, b) {
           return r + r + g + g + b + b;
         });
 
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        if(typeof this.value === 'undefined'){
+        if (typeof this.value === 'undefined') {
           this.set('value', {});
         }
-        this.set('value.red', parseInt(result[1], 16));
-        this.set('value.green', parseInt(result[2], 16));
-        this.set('value.blue', parseInt(result[3], 16));
+        this.set('red', parseInt(result[1], 16));
+        this.set('green', parseInt(result[2], 16));
+        this.set('blue', parseInt(result[3], 16));
       }
     });
   </script>
