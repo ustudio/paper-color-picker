@@ -1,6 +1,7 @@
 <link href="../polymer/polymer.html" rel="import">
 <link href="../paper-ripple/paper-ripple.html" rel="import">
 <link href="../iron-resizable-behavior/iron-resizable-behavior.html" rel="import">
+<link href="ustudio-color-behavior.html" rel="import">
 
 <dom-module id="paper-color-circle">
   <template>
@@ -22,13 +23,13 @@
         user-select: none;
       }
 
-      #rippleContainer {
+      #ripple-container {
         position: relative;
         margin: auto;
       }
     </style>
 
-    <div id="rippleContainer">
+    <div id="ripple-container">
       <canvas id="canvas" on-down="onDown" on-up="onUp" on-track="onMove"></canvas>
       <paper-ripple id="ripple" class$="{{ shape }}" recenters noink></paper-ripple>
     </div>
@@ -76,6 +77,7 @@
 
         return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
       }
+
       function rgb2hsl (r, g, b) {
         r /= 255, g /= 255, b /= 255;
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -96,6 +98,7 @@
 
         return [h, s, l];
       }
+
       var rgb2hsv = function (r, g, b) {
         var b, delta, g, h, max, min, r, s, v;
         min = Math.min(r, g, b);
@@ -174,24 +177,6 @@
             }
           },
 
-          red: {
-            type: Number,
-            value: 0,
-            notify: true
-          },
-
-          green: {
-            type: Number,
-            value: 0,
-            notify: true
-          },
-
-          blue: {
-            type: Number,
-            value: 0,
-            notify: true
-          },
-
           /**
            * A coloured AA border can be drawn to prevent jagged edges on circles
            *
@@ -230,27 +215,6 @@
           },
 
           /**
-           * In case of a huebox, the hue from 0 to 1
-           *
-           * @attribute value
-           * @type number
-           * @default 1
-           */
-          hue: {
-            type: Number,
-            value: 0,
-            notify: true,
-            observer: '_redrawIfDomReady'
-          },
-
-          luminosity: {
-            type: Number,
-            value: 0.5,
-            notify: true,
-            observer: '_redrawIfDomReady'
-          },
-
-          /**
            * square, circle or huebox
            *
            * @attribute shape
@@ -274,13 +238,6 @@
             type: String,
             value: 'hsv',
             notify: true
-          },
-
-          brightness: {
-            type: Number,
-            value: 1,
-            notify: true,
-            observer: '_redrawIfDomReady'
           }
         },
 
@@ -289,7 +246,8 @@
         ],
 
         behaviors: [
-          Polymer.IronResizableBehavior
+          Polymer.IronResizableBehavior,
+          uStudio.ColorBehavior
         ],
 
         listeners: {
@@ -313,9 +271,9 @@
             }
           }
           if (color[3] > 0 && color[3] == 255) {
-            this.set('color.red', color[0]);
-            this.set('color.green', color[1]);
-            this.set('color.blue', color[2]);
+            this.set('red', color[0]);
+            this.set('green', color[1]);
+            this.set('blue', color[2]);
             if (!this.noAaBorder && this.colouredAaBorder)
               this.redraw();
           }
@@ -332,7 +290,10 @@
 
         onUp: function (e) {
           this._trackingColorChanges = false;
-          this.$.ripple.style.color = 'rgb(' + this.color['red'] + ',' + this.color['green'] + ',' + this.color['blue'] + ')';
+          this.$.ripple.style.color = 'rgb(' +
+            this.red + ', ' +
+            this.green + ', ' +
+            this.blue + ')';
 
           this.$.ripple.downAction(e);
           this.async(function () {
@@ -350,11 +311,12 @@
               width = parseInt(computedStyle.width);
               height = parseInt(computedStyle.height);
             }
+
             this.size =  Math.floor(Math.min(width, height));
             this.$.canvas.width = this.size;
             this.$.canvas.height = this.size;
-            this.$.rippleContainer.style.width = this.size + 'px';
-            this.$.rippleContainer.style.height = this.size + 'px';
+            this.$['ripple-container'].style.width = this.size + 'px';
+            this.$['ripple-container'].style.height = this.size + 'px';
 
             var halfsize = this.size / 2;
             var bitmap = this._ctx.getImageData(0, 0, this.size, this.size);
@@ -425,7 +387,8 @@
             };
             this._ctx.putImageData(bitmap, 0, 0);
             if (!this.noAaBorder && this.shape === 'circle') {
-              //Getting a nice anti aliased edge using canvas is hard, so instead a white circle is draw over the border
+              // Getting a nice anti-aliased edge using canvas is hard,
+              // so instead a white circle is drawn over the border
               this.drawAACircle();
             }
           });
@@ -433,13 +396,13 @@
 
         drawAACircle: function () {
           if (this.colouredAaBorder) {
-            if (this.color['green']) {
-              this.set('_ctx.strokeStyle', 'rgb(' + this.color['red'] + ',' + this.color['green'] + ',' + this.color['blue'] + ')');
+            if (this.green) {
+              this.set('_ctx.strokeStyle', 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')');
             } else {
               this.set('_ctx.strokeStyle', 'rgb(' + this.colouredAaBorder[0] + ',' + this.colouredAaBorder[1] + ',' + this.colouredAaBorder[2] + ')');
             }
           } else {
-            this.set('_ctx.strokeStyle', 'rgba(255,255,255,.99)');
+            this.set('_ctx.strokeStyle', 'rgba(255, 255, 255, 0.99)');
           }
           this.set('_ctx.lineWidth', this.size / 100);
           this._ctx.beginPath();

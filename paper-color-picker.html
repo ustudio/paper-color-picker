@@ -23,10 +23,10 @@ and to open the dialog
 <link href="../paper-input/paper-input-container.html" rel="import">
 <link href="../neon-animation/animations/fade-out-animation.html" rel="import">
 <link href="../neon-animation/animations/scale-up-animation.html" rel="import">
-<link href="color-names.html" rel="import">
 <link href="paper-color-circle.html" rel="import">
 <link href="rgb-input.html" rel="import">
 <link href="hex-input.html" rel="import">
+<link href="ustudio-color-behavior.html" rel="import">
 
 <dom-module id="paper-color-picker">
   <style>
@@ -195,7 +195,6 @@ and to open the dialog
   </style>
 
   <template>
-    <color-names id="color-names"></color-names>
 
     <paper-dialog id="dialog"
       entry-animation="scale-up-animation"
@@ -203,13 +202,13 @@ and to open the dialog
       class="color-picker-dialog">
 
       <div id="preview">
-        <div id="color"></div>
+        <div id="color" style$="[[ backgroundStyle ]]"></div>
         <div id="title">
           <template is="dom-if" if="{{ showName }}">
             Color Picker
           </template>
           <template is="dom-if" if="{{ !showName }}">
-            {{ _computeName(red, green, blue) }}
+            {{ name }}
           </template>
         </div>
       </div>
@@ -224,6 +223,7 @@ and to open the dialog
           red="{{ red }}"
           green="{{ green }}"
           blue="{{ blue }}"
+          name="{{ name }}"
           hue="{{ hue }}"
           luminosity="{{ luminosity }}">
         </paper-color-circle>
@@ -329,40 +329,14 @@ and to open the dialog
 
       is: 'paper-color-picker',
 
+      behaviors: [
+        uStudio.ColorBehavior
+      ],
+
       properties: {
-        hue: {
-          type: Number,
-          value: 0,
-          notify: true
-        },
-
-        alpha: {
-          type: Number,
-          value: 1,
-          notify: true
-        },
-
         showAlpha: {
           type: Boolean,
           value: false
-        },
-
-        red: {
-          type: Number,
-          value: 0,
-          notify: true
-        },
-
-        green: {
-          type: Number,
-          value: 0,
-          notify: true
-        },
-
-        blue: {
-          type: Number,
-          value: 0,
-          notify: true
         },
 
         /**
@@ -377,18 +351,6 @@ and to open the dialog
           value: 'circle'
         },
 
-        luminosity: {
-          type: Number,
-          value: 0.5,
-          notify: true
-        },
-
-        brightness: {
-          type: Number,
-          value: 1,
-          notify: true
-        },
-
         /**
           * *hsv* or *hsl*
           *
@@ -399,11 +361,6 @@ and to open the dialog
         type: {
           type: String,
           value: 'hsv'
-        },
-
-        name: {
-          type: String,
-          value: 'Black'
         },
 
         showName: {
@@ -418,36 +375,9 @@ and to open the dialog
           observer: '_recenterDialog'
         },
 
-        hex: {
-          type: String,
-          value: '000',
-          notify: true
-        },
-
-        _initialState: {
-          type: Object,
-          value: function () {
-            return {
-              red: this.red,
-              green: this.green,
-              blue: this.blue,
-              hue: this.hue,
-              name: this.name,
-              luminosity: this.luminosity,
-              brightness: this.brightness,
-              alpha: this.alpha
-            }
-          }
-        }
       },
 
-      observers: [
-        '_hexChanged(hex)'
-      ],
-
       ready: function () {
-        this._setHexFromRGB();
-
         window.addEventListener('resize', function () {
           this.$.dialog.resetFit();
         }.bind(this));
@@ -455,30 +385,6 @@ and to open the dialog
 
       _computeModeButtonText: function (advanced) {
         return advanced ? 'Basic' : 'Advanced';
-      },
-
-      _calculateLuminance: function (r, g, b) {
-        var a = [r, g, b].map(function (v) {
-          v /= 255;
-          return (v <= 0.03928) ?
-            v / 12.92 :
-            Math.pow(((v + 0.055) / 1.055), 2.4);
-        });
-
-        return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-      },
-
-      _hexChanged: function () {
-        this._setRGBFromHex();
-        this._setBackgroundColor();
-      },
-
-      _setBackgroundColor: function () {
-        this.$.color.style.backgroundColor = 'rgba(' +
-          this.red + ',' +
-          this.green + ',' +
-          this.blue + ',' +
-          this.alpha + ')';
       },
 
       drawHuePicker: function () {
@@ -505,8 +411,8 @@ and to open the dialog
       },
 
       _resetColor: function () {
-        Object.keys(this._initialState).forEach(function (key) {
-          this.set(key, this._initialState[key]);
+        Object.keys(this.initialState).forEach(function (key) {
+          this.set(key, this.initialState[key]);
         });
       },
 
@@ -533,56 +439,8 @@ and to open the dialog
 
       _recenterDialog: function () {
         if (this.$.dialog.opened) this.$.dialog.center();
-      },
-
-      _setHexFromRGB: function () {
-        var rgb = this.blue | (this.green << 8) | (this.red << 16);
-        var string = '#' + (0x1000000 + rgb).toString(16).slice(1);
-        this.set('hex', string.toUpperCase());
-      },
-
-      _setRGBFromHex: function () {
-        if (this.$['hex-input'].invalid) return;
-        var matches = this.hex.match(/^#?([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})$/i);
-        var colors = {};
-        if (matches) {
-          colors = matches.slice(1, 4).map(function (color) {
-            return (color.length > 1 ? 1 : 0x11) * parseInt(color, 16);
-          });
-        }
-        this.set('red', colors[0]);
-        this.set('green', colors[1]);
-        this.set('blue', colors[2]);
-      },
-
-      _computeName: function (red, green, blue) {
-        var closest = {
-          color: undefined,
-          distance: Infinity
-        };
-
-        this.$['color-names'].colorNames().forEach(function (color) {
-          var distance = Math.sqrt(
-            Math.pow(red - color.rgb[0], 2) +
-            Math.pow(green - color.rgb[1], 2) +
-            Math.pow(blue - color.rgb[2], 2)
-          );
-          if (distance < closest.distance) {
-            closest.color = color;
-            closest.distance = distance;
-          }
-        }.bind(this));
-
-        this.name = closest.color.title;
-
-        var luminance = Math.max(
-          this._calculateLuminance.apply(this, closest.color.rgb),
-          Math.min(1, 1 - this.alpha + 0.2)
-        );
-        var opacity = Math.max(0, luminance -.5) * 1.8;
-        opacity = Math.round(opacity * 100) / 100;
-        this.$.title.style.textShadow = 'rgba(0,0,0,' + opacity + ') 1px 0 60px';
       }
+
     });
   </script>
 </dom-module>

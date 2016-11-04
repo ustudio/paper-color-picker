@@ -1,7 +1,8 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
-<link rel="import" href="./paper-color-picker.html">
+<link rel="import" href="paper-color-picker.html">
+<link rel="import" href="ustudio-color-behavior.html">
 
 <!--
 This component contains 3 elements:
@@ -25,7 +26,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 <dom-module id="paper-color-input">
   <template>
     <style>
-      #colorPreview {
+      #color-preview {
         height: 16px;
         width: 16px;
         border: 1px solid rgba(0, 0, 0, 0.1);
@@ -39,18 +40,10 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 
       #color {
         position: absolute;
-        left: 0px;
-        top: 0px;
-        right: 0px;
-        bottom: 0px;
-      }
-
-      #noColor {
-        width: 22.6px;
-        height: 1px;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
-        transform-origin: 0px 0px;
-        transform: translateY(15.5px) rotate(-45deg);
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
       }
 
       #input {
@@ -63,12 +56,6 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         font-family: monospace;
         text-transform: uppercase;
       }
-
-      span.light {
-        font-size: 10px;
-        font-family: monospace;
-        color: rgba(0, 0, 0, 0.3);
-      }
     </style>
 
     <paper-input-container id="input" always-float-label>
@@ -76,16 +63,14 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       <label>[[ label ]]</label>
 
       <div class="paper-input-input">
-        <span>{{ name }}</span>&nbsp;<!--
-        --><template is="dom-if" if="{{ withDescription }}"><!--
-          --><span class="light">(</span><!--
-          --><span class="dark">{{ hex }}</span><!--
-          --><span class="light">)</span>
-           </template>
+        <span>{{ name }}</span>&nbsp;<span
+          hidden$="{{ !withDescription }}" class="dark">
+          {{ hex }}
+        </span>
       </div>
 
-      <div id="colorPreview" suffix>
-        <div id="color" style$="{{ _computeBackgroundColor(value.*) }}"></div>
+      <div id="color-preview" suffix>
+        <div id="color" style$="[[ backgroundStyle ]]"></div>
       </div>
 
     </paper-input-container>
@@ -95,7 +80,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       red="{{ red }}"
       green="{{ green }}"
       blue="{{ blue }}"
-      name="{{ colorName }}"
+      name="{{ name }}"
       shape="{{ shape }}"
       type="{{ type }}"
       hex="{{ hex }}"
@@ -107,39 +92,16 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 
   <script>
     Polymer({
+
       is: 'paper-color-input',
 
+      behaviors: [
+        uStudio.ColorBehavior
+        // disabled till https://github.com/Polymer/polymer/issues/3167 gets fixed
+        // Polymer.IronFormElementBehavior
+      ],
+
       properties: {
-        red: {
-          type: Number,
-          value: 0,
-          notify: true
-        },
-
-        green: {
-          type: Number,
-          value: 0,
-          notify: true
-        },
-
-        blue: {
-          type: Number,
-          value: 0,
-          notify: true
-        },
-
-        alpha: {
-          type: Number,
-          value: 1,
-          notify: true
-        },
-
-        hex: {
-          type: String,
-          notify: true,
-          observer: '_setValueFromHex'
-        },
-
         /**
          * The label for this input.
          *
@@ -150,12 +112,6 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         label: {
           type: String,
           value: ''
-        },
-
-        name: {
-          type: String,
-          value: '',
-          notify: true
         },
 
         /**
@@ -209,21 +165,9 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         }
       },
 
-      behaviors: [
-        /* Polymer.IronFormElementBehavior */ // disabled till https://github.com/Polymer/polymer/issues/3167 gets fixed
-      ],
-
-      observers: [
-        '_setValueAsHexFromValue(value.*)'
-      ],
-
       listeners: {
         'input.tap': 'openColorPicker',
         'immediate-color-changed': '_setName'
-      },
-
-      // Element Lifecycle
-      ready: function () {
       },
 
       _setName: function () {
@@ -233,52 +177,8 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 
       openColorPicker: function () {
         this.$.picker.open();
-      },
-
-      _computeBackgroundColor: function () {
-        return 'background: rgba(' +
-          this.red + ', ' +
-          this.green + ', ' +
-          this.blue + ', ' +
-          this.alpha + ')';
-      },
-
-      // FIXME
-      _setValueAsHexFromValue: function () {
-        var hex = '#';
-        var value = this.value;
-
-        ['red', 'green', 'blue'].forEach(function (c) {
-          var h = value[c].toString(16);
-          l = h.length;
-          hex += l < 2 ? '0' : '';
-          hex += l < 1 ? '0' : '';
-          hex += h;
-        });
-
-        this.set('hex', hex);
-      },
-
-      // FIXME
-      _setValueFromHex: function () {
-        var hex = this.valueAsHex;
-        if (typeof hex != 'string') {
-          this.set('value', {});
-          return;
-        }
-        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-        var hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-          return r + r + g + g + b + b;
-        });
-
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        if (typeof this.value === 'undefined') {
-          this.set('value', {});
-        }
-        this.set('red', parseInt(result[1], 16));
-        this.set('green', parseInt(result[2], 16));
-        this.set('blue', parseInt(result[3], 16));
       }
+
     });
   </script>
 </dom-module>
