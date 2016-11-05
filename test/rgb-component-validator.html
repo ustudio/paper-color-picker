@@ -1,0 +1,50 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>rgb-component-validator test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="rgb-component-validatable.html">
+  <link rel="import" href="../rgb-component-validator.html">
+</head>
+<body>
+
+  <test-fixture id="rgb-component-validator">
+    <template>
+      <rgb-component-validator></rgb-component-validator>
+      <rgb-component-validatable></rgb-component-validatable>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<rgb-component-validator>', function() {
+      test('validator works', function () {
+        var node = fixture('rgb-component-validator');
+        var input = node[1];
+
+        input.validator = 'rgb-component-validator';
+
+        assert.isTrue(input.validate(0));
+        assert.isTrue(input.validate('0'));
+        assert.isTrue(input.validate(1));
+        assert.isTrue(input.validate(2));
+        assert.isTrue(input.validate(30));
+        assert.isTrue(input.validate(123));
+        assert.isTrue(input.validate(255));
+        assert.isTrue(input.validate('255'));
+
+        assert.isFalse(input.validate(-1));
+        assert.isFalse(input.validate(256));
+        assert.isFalse(input.validate(300));
+        assert.isFalse(input.validate(2550));
+      });
+    });
+  </script>
+
+</body>
+</html>

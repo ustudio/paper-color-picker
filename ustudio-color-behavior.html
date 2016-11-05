@@ -3414,7 +3414,7 @@
 
       backgroundStyle: {
         type: String,
-        computed: '_computeBackgroundColor(red, green, blue, alpha)'
+        computed: '_computeBackgroundStyle(red, green, blue, alpha)'
       },
 
       name: {
@@ -3450,28 +3450,13 @@
       _updateDisabled: {
         type: Boolean,
         value: false
-      },
-
-      initialState: Object
+      }
     },
 
     observers: [
       '_setHexFromRGB(red, green, blue)',
       '_setRGBFromHex(hex)'
     ],
-
-    ready: function () {
-      this.set('initialState', {
-        red: this.red,
-        green: this.green,
-        blue: this.blue,
-        hue: this.hue,
-        name: this.name,
-        luminosity: this.luminosity,
-        brightness: this.brightness,
-        alpha: this.alpha
-      });
-    },
 
     _setHexFromRGB: function (red, green, blue) {
       if (this._updateDisabled) return;
@@ -3544,28 +3529,9 @@
       }.bind(this));
 
       return closest.color.title;
-
-      // var luminance = Math.max(
-      //   this._calculateLuminance.apply(this, closest.color.rgb),
-      //   Math.min(1, 1 - this.alpha + 0.2)
-      // );
-      // var opacity = Math.max(0, luminance -.5) * 1.8;
-      // opacity = Math.round(opacity * 100) / 100;
-      // this.$.title.style.textShadow = 'rgba(0, 0, 0, ' + opacity + ') 1px 0 60px';
     },
 
-    _calculateLuminance: function (red, green, blue) {
-      var a = [red, green, blue].map(function (v) {
-        v /= 255;
-        return (v <= 0.03928) ?
-          v / 12.92 :
-          Math.pow(((v + 0.055) / 1.055), 2.4);
-      });
-
-      return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-    },
-
-    _computeBackgroundColor: function (red, green, blue, alpha) {
+    _computeBackgroundStyle: function (red, green, blue, alpha) {
       return 'background: rgba(' +
         red + ', ' + green + ', ' + blue + ', ' + alpha + ');';
     }

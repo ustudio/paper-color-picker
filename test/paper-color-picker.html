@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>paper-color-picker test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+
+  <link rel="import" href="../paper-color-picker.html">
+</head>
+<body>
+
+  <test-fixture id="rgb-picker">
+    <template>
+      <paper-color-picker
+        red="239"
+        green="83"
+        blue="35"
+      ></paper-color-picker>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<paper-color-picker>', function() {
+
+      test('initialState is saved', function () {
+        var element = fixture('rgb-picker');
+        element.hex = '#00FF00';
+
+        assert.equal(element.initialState.red, 239);
+        assert.equal(element.initialState.green, 83);
+        assert.equal(element.initialState.blue, 35);
+        assert.equal(element.initialState.hex, '#EF5323');
+      });
+
+    });
+  </script>
+
+</body>
+</html>

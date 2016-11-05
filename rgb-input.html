@@ -18,16 +18,32 @@
         @apply(--layout-horizontal);
         @apply(--layout-around-justified);
       }
+
+      rgb-component-input {
+        margin: 0 5px;
+      }
+
+      rgb-component-input:first-child {
+        margin-left: 0;
+      }
+
+      rgb-component-input:last-child {
+        margin-right: 0;
+      }
     </style>
 
     <div class="container">
-      <template is="dom-repeat" items="{{ colors }}" as="value">
-        <rgb-component-input
-          color="{{ _computeName(index) }}"
-          value="{{ value }}"
-          class="paper-input-input">
-        </rgb-component-input>
-      </template>
+      <rgb-component-input
+        color="Red" value="{{ red }}" class="paper-input-input">
+      </rgb-component-input>
+
+      <rgb-component-input
+        color="Green" value="{{ green }}" class="paper-input-input">
+      </rgb-component-input>
+
+      <rgb-component-input
+        color="Blue" value="{{ blue }}" class="paper-input-input">
+      </rgb-component-input>
     </div>
 
   </template>
@@ -39,21 +55,20 @@
     is: 'rgb-input',
 
     properties: {
-      names: {
-        type: Array,
-        value: [ 'Red', 'Green', 'Blue' ],
-        readonly: true
+      red: {
+        type: Number,
+        notify: true
       },
 
-      colors: {
-        type: Array,
-        notify: true,
-        reflectToAttribute: true
-      }
-    },
+      green: {
+        type: Number,
+        notify: true
+      },
 
-    _computeName: function (index) {
-      return this.names[index];
+      blue: {
+        type: Number,
+        notify: true
+      }
     }
 
   });

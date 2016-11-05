@@ -29,11 +29,11 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       #color-preview {
         height: 16px;
         width: 16px;
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.4);
         border-radius: 1px;
         margin: 2px;
         position: relative;
-        background-image: linear-gradient(to right, #ffffff 1%,#ffffff 50%,#eee 50%,#eee 100%), linear-gradient(to right, #eee 1%,#eee 50%,#ffffff 50%,#ffffff 100%);
+        background-image: linear-gradient(to right, #ffffff 1%, #ffffff 50%, #eee 50%, #eee 100%), linear-gradient(to right, #eee 1%, #eee 50%, #ffffff 50%, #ffffff 100%);
         background-size: 16px 8px,  16px 8px;
         background-repeat: repeat-x, repeat;
       }
@@ -97,8 +97,6 @@ There are three different main configurations all 3 elements allow: `circle`, `s
 
       behaviors: [
         uStudio.ColorBehavior
-        // disabled till https://github.com/Polymer/polymer/issues/3167 gets fixed
-        // Polymer.IronFormElementBehavior
       ],
 
       properties: {
@@ -166,13 +164,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       },
 
       listeners: {
-        'input.tap': 'openColorPicker',
-        'immediate-color-changed': '_setName'
-      },
-
-      _setName: function () {
-        this.set('name', this.$.picker.name);
-        this.$.picker.setColor();
+        'input.tap': 'openColorPicker'
       },
 
       openColorPicker: function () {

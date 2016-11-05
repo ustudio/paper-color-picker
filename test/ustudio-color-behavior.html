@@ -67,15 +67,6 @@
         assert.equal(element.name, 'Flame');
       });
 
-      test('initialState is set properly', function () {
-        var element = fixture('rgb-first');
-
-        assert.equal(element.initialState.red, 239);
-        assert.equal(element.initialState.green, 83);
-        assert.equal(element.initialState.blue, 35);
-        assert.isUndefined(element.initialState.hex);
-      });
-
       test('other values update when rgb value changes', function () {
         var element = fixture('rgb-first');
 
