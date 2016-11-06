@@ -35,12 +35,12 @@
         id="input"
         type="text"
         bind-value="{{ value }}"
-        autocapitalize="[[ autocapitalize ]]"
         minlength="4"
         maxlength="7"
         aria-label="hex color value"
         allowed-pattern="[#a-fA-F0-9]"
         validator="hex-validator"
+        invalid="{{ invalid }}"
         prevent-invalid-input
       />
       <paper-input-error>Enter a 3- or 6-digit hex value</paper-input-error>
@@ -58,9 +58,10 @@
     ],
 
     properties: {
-      autocapitalize: {
+      invalid: {
         type: Boolean,
-        value: true
+        value: false,
+        notify: true
       },
 
       label: {

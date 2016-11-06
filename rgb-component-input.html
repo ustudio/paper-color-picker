@@ -40,6 +40,7 @@
         aria-label="[[ color ]] value from 0 to 255"
         allowed-pattern="[0-9]"
         validator="rgb-component-validator"
+        invalid="{{ invalid }}"
         prevent-invalid-input
       />
       <paper-input-error>0 - 255</paper-input-error>
@@ -60,6 +61,12 @@
     properties: {
       color: {
         type: String
+      },
+
+      invalid: {
+        type: Boolean,
+        value: false,
+        notify: true
       },
 
       value: {

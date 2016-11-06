@@ -3,7 +3,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>hex-input test</title>
+  <title>rgb-component-input test</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
@@ -12,37 +12,25 @@
   <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
   <link rel="import" href="../../polymer/polymer.html">
-  <link rel="import" href="../hex-input.html">
+  <link rel="import" href="../rgb-component-input.html">
 </head>
 <body>
 
   <test-fixture id="basic">
     <template>
-      <hex-input></hex-input>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="label">
-    <template>
-      <hex-input label="foo"></hex-input>
+      <rgb-component-input color="Red" value="128"></rgb-component-input>
     </template>
   </test-fixture>
 
   <test-fixture id="error">
     <template>
-      <hex-input value="foobar" error-message="error"></hex-input>
+      <rgb-component-input value="foobar" error-message="error"></rgb-component-input>
     </template>
   </test-fixture>
 
   <test-fixture id="validator">
     <template>
-      <hex-input value="jklmnop123"></hex-input>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="value">
-    <template>
-      <hex-input value="#c03030"></hex-input>
+      <rgb-component-input value="jklmnop"></rgb-component-input>
     </template>
   </test-fixture>
 
@@ -50,13 +38,13 @@
     suite('basic', function () {
 
       test('value may be set', function () {
-        var input = fixture('value');
-        assert.equal(input.value, '#c03030');
+        var input = fixture('basic');
+        assert.equal(input.value, 128);
       });
 
       test('setting value sets the input value', function () {
         var input = fixture('basic');
-        input.value = 'foobar';
+        input.value = 64;
         assert.equal(
           input.inputElement.value,
           input.value,
@@ -76,24 +64,9 @@
         );
       });
 
-    });
-
-    suite('label', function () {
-
-      test('label has a default value', function () {
+      test('color name may be set', function () {
         var input = fixture('basic');
-        assert.equal(input.label, 'Hex Value');
-      });
-
-      test('label may be set', function () {
-        var input = fixture('label');
-        assert.equal(input.label, 'foo');
-      });
-
-      test('label may be changed', function () {
-        var input = fixture('label');
-        input.label = 'Enter a hexadecimal value';
-        assert.equal(input.label, 'Enter a hexadecimal value');
+        assert.equal(input.color, 'Red');
       });
 
     });
@@ -111,16 +84,16 @@
       });
 
       test('invalid attribute not set if not invalid', function() {
-        var input = fixture('value');
+        var input = fixture('basic');
         assert.isFalse(input.invalid, 'invalid is false');
       });
 
       test('invalid attribute changes with value', function() {
-        var input = fixture('value');
+        var input = fixture('basic');
         assert.isFalse(input.invalid, 'invalid is false');
         input.value = 'foobar';
         assert.isTrue(input.invalid, 'invalid is true');
-        input.value = '#fcAB67';
+        input.value = 123;
         assert.isFalse(input.invalid, 'invalid is false');
       });
 

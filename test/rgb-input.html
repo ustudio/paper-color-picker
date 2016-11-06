@@ -1,0 +1,85 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>rgb-input test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../rgb-input.html">
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <rgb-input></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="red">
+    <template>
+      <rgb-input red="128"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="green">
+    <template>
+      <rgb-input green="64"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="blue">
+    <template>
+      <rgb-input blue="32"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="rgb">
+    <template>
+      <rgb-input red="200" green="150" blue="100"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('basic', function () {
+
+      test('values default to 0', function () {
+        var input = fixture('basic');
+        assert.equal(input.red, 0);
+        assert.equal(input.green, 0);
+        assert.equal(input.blue, 0);
+      });
+
+      test('setting red value works', function () {
+        var input = fixture('red');
+        assert.equal(input.red, 128);
+      });
+
+      test('setting green value works', function () {
+        var input = fixture('green');
+        assert.equal(input.green, 64);
+      });
+
+      test('setting blue value works', function () {
+        var input = fixture('blue');
+        assert.equal(input.blue, 32);
+      });
+
+      test('all values can be set', function () {
+        var input = fixture('rgb');
+        assert.equal(input.red, 200);
+        assert.equal(input.green, 150);
+        assert.equal(input.blue, 100);
+      });
+
+    });
+  </script>
+
+</body>
+</html>
