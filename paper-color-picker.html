@@ -15,6 +15,7 @@ and to open the dialog
 @demo demo/index.html
 -->
 <link href="../polymer/polymer.html" rel="import">
+<link href="../iron-a11y-keys/iron-a11y-keys.html" rel="import">
 <link href="../iron-flex-layout/iron-flex-layout.html" rel="import">
 <link href="../paper-slider/paper-slider.html" rel="import">
 <link href="../paper-dialog/paper-dialog.html" rel="import">
@@ -288,13 +289,21 @@ and to open the dialog
 
         <div class="buttons">
           <paper-button on-tap="_toggleAdvancedMode">
-            [[ _computeModeButtonText(advanced) ]]
+            [[ _computeModeButtonText(advanced, basicButtonText, advancedButtonText) ]]
           </paper-button>
-          <paper-button dialog-confirm>OK</paper-button>
-          <paper-button dialog-dismiss on-tap="resetState">Cancel</paper-button>
+          <paper-button dialog-confirm>
+            [[ confirmationButtonText ]]
+          </paper-button>
+          <paper-button dialog-dismiss on-tap="resetState">
+            [[ cancelButtonText ]]
+          </paper-button>
         </div>
 
       </div>
+
+      <iron-a11y-keys target="[[ confirmationButtonTarget ]]" keys="enter"
+        on-keys-pressed="_onEnterPressed"></iron-a11y-keys>
+
     </paper-dialog>
   </template>
 
@@ -344,6 +353,33 @@ and to open the dialog
           observer: '_recenterDialog'
         },
 
+        advancedButtonText: {
+          type: String,
+          value: 'Advanced'
+        },
+
+        basicButtonText: {
+          type: String,
+          value: 'Basic'
+        },
+
+        confirmationButtonText: {
+          type: String,
+          value: 'OK'
+        },
+
+        confirmationButtonTarget: {
+          type: Object,
+          value: function () {
+            return this.$.dialog;
+          }
+        },
+
+        cancelButtonText: {
+          type: String,
+          value: 'Cancel'
+        },
+
         initialState: Object
       },
 
@@ -378,8 +414,14 @@ and to open the dialog
         });
       },
 
-      _computeModeButtonText: function (advanced) {
-        return advanced ? 'Basic' : 'Advanced';
+      _computeModeButtonText: function (advanced, basicButtonText, advancedButtonText) {
+        return advanced ?
+          basicButtonText :
+          advancedButtonText;
+      },
+
+      _onEnterPressed: function () {
+        this.$.dialog.close();
       },
 
       drawHuePicker: function () {
