@@ -37,10 +37,10 @@
       test('cancel button resets state', function (done) {
         var element = fixture('rgb-picker');
 
+        assert.equal(element.initialState.hex, '#EF5323');
         assert.equal(element.initialState.red, 239);
         assert.equal(element.initialState.green, 83);
         assert.equal(element.initialState.blue, 35);
-        assert.equal(element.initialState.hex, '#EF5323');
 
         runAfterOpen(element, function () {
           element.hex = '#00FF00';
@@ -49,10 +49,10 @@
           assert.equal(element.blue, 0);
 
           element.addEventListener('iron-overlay-closed', function (event) {
+            assert.equal(element.hex, '#EF5323');
             assert.equal(element.red, 239);
             assert.equal(element.green, 83);
             assert.equal(element.blue, 35);
-            assert.equal(element.hex, '#EF5323');
             done();
           });
 
@@ -63,10 +63,10 @@
       test('escape key resets state', function (done) {
         var element = fixture('rgb-picker');
 
+        assert.equal(element.initialState.hex, '#EF5323');
         assert.equal(element.initialState.red, 239);
         assert.equal(element.initialState.green, 83);
         assert.equal(element.initialState.blue, 35);
-        assert.equal(element.initialState.hex, '#EF5323');
 
         runAfterOpen(element, function () {
           element.hex = '#00FF00';
@@ -75,10 +75,10 @@
           assert.equal(element.blue, 0);
 
           element.addEventListener('iron-overlay-closed', function (event) {
+            assert.equal(element.hex, '#EF5323');
             assert.equal(element.red, 239);
             assert.equal(element.green, 83);
             assert.equal(element.blue, 35);
-            assert.equal(element.hex, '#EF5323');
             done();
           });
 
@@ -89,10 +89,10 @@
       test('OK button preserves state', function (done) {
         var element = fixture('rgb-picker');
 
+        assert.equal(element.initialState.hex, '#EF5323');
         assert.equal(element.initialState.red, 239);
         assert.equal(element.initialState.green, 83);
         assert.equal(element.initialState.blue, 35);
-        assert.equal(element.initialState.hex, '#EF5323');
 
         runAfterOpen(element, function () {
           element.hex = '#00FF00';
@@ -101,14 +101,40 @@
           assert.equal(element.blue, 0);
 
           element.addEventListener('iron-overlay-closed', function (event) {
+            assert.equal(element.hex, '#00FF00');
             assert.equal(element.red, 0);
             assert.equal(element.green, 255);
             assert.equal(element.blue, 0);
-            assert.equal(element.hex, '#00FF00');
             done();
           });
 
           MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
+        });
+      });
+
+      test('enter key preserves state', function (done) {
+        var element = fixture('rgb-picker');
+
+        assert.equal(element.initialState.hex, '#EF5323');
+        assert.equal(element.initialState.red, 239);
+        assert.equal(element.initialState.green, 83);
+        assert.equal(element.initialState.blue, 35);
+
+        runAfterOpen(element, function () {
+          element.hex = '#00FF00';
+          assert.equal(element.red, 0);
+          assert.equal(element.green, 255);
+          assert.equal(element.blue, 0);
+
+          element.addEventListener('iron-overlay-closed', function (event) {
+            assert.equal(element.hex, '#00FF00');
+            assert.equal(element.red, 0);
+            assert.equal(element.green, 255);
+            assert.equal(element.blue, 0);
+            done();
+          });
+
+          MockInteractions.pressAndReleaseKeyOn(element, undefined, [], 'enter');
         });
       });
 
