@@ -114,6 +114,7 @@
 
       test('enter key preserves state', function (done) {
         var element = fixture('rgb-picker');
+        var confirmButton = Polymer.dom(element.root).querySelector('[dialog-confirm]');
 
         assert.equal(element.initialState.hex, '#EF5323');
         assert.equal(element.initialState.red, 239);
@@ -134,7 +135,7 @@
             done();
           });
 
-          MockInteractions.pressAndReleaseKeyOn(element, undefined, [], 'enter');
+          MockInteractions.pressAndReleaseKeyOn(confirmButton, undefined, [], 'enter');
         });
       });
 

@@ -184,7 +184,8 @@ and to open the dialog
     <paper-dialog id="dialog"
       entry-animation="scale-up-animation"
       exit-animation="fade-out-animation"
-      class="color-picker-dialog">
+      class="color-picker-dialog"
+      with-backdrop="[[ withBackdrop ]]">
 
       <div id="preview">
         <div id="color" style$="[[ backgroundStyle ]]"></div>
@@ -378,6 +379,11 @@ and to open the dialog
         cancelButtonText: {
           type: String,
           value: 'Cancel'
+        },
+
+        withBackdrop: {
+          type: Boolean,
+          value: false
         },
 
         initialState: Object

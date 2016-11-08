@@ -86,7 +86,8 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       hex="{{ hex }}"
       alpha="{{ alpha }}"
       allow-alpha="{{ allowAlpha }}"
-      always-show-alpha="{{ alwaysShowAlpha }}"></paper-color-picker>
+      always-show-alpha="{{ alwaysShowAlpha }}"
+      with-backdrop="[[ withBackdrop ]]"></paper-color-picker>
 
   </template>
 
@@ -150,6 +151,11 @@ There are three different main configurations all 3 elements allow: `circle`, `s
          * Whether to show the color also as a string
          */
         withDescription: {
+          type: Boolean,
+          value: false
+        },
+
+        withBackdrop: {
           type: Boolean,
           value: false
         },

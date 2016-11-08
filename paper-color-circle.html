@@ -348,10 +348,11 @@
                     bitmap.data[offset + 2] = color[2];
                     if (distanceFromCenter - 1 >= 0) {
                       var distance = Math.round((distanceFromCenter - 1) * halfsize);
-
-                      bitmap.data[offset + 3] = 255 * ((smoothBorder-distance) / smoothBorder); // transparency
+                      // transparency
+                      bitmap.data[offset + 3] = 255 * ((smoothBorder-distance) / smoothBorder);
                     } else {
-                      bitmap.data[offset + 3] = 255; // no transparency
+                      // no transparency
+                      bitmap.data[offset + 3] = 255;
                     }
                   };
                 } else if (this.shape === 'huebox') {
