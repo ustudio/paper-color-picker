@@ -3489,6 +3489,8 @@
     observers: [
       '_setHexFromRGB(red, green, blue)',
       '_setRGBFromHex(hex)'
+      // '_setHueFromRGB(red, green, blue)',
+      // '_setRGBFromHue(hue)'
     ],
 
     _setHexFromRGB: function (red, green, blue) {
@@ -3505,6 +3507,28 @@
       if (this._updateDisabled) return;
 
       var rgb = this._convertHexToRGB(hex);
+
+      this._updateDisabled = true;
+      if (this.red !== rgb[0]) this.set('red', rgb[0]);
+      if (this.green !== rgb[1]) this.set('green', rgb[1]);
+      if (this.blue !== rgb[2]) this.set('blue', rgb[2]);
+      this._updateDisabled = false;
+    },
+
+    _setHueFromRGB: function (red, green, blue) {
+      if (this._updateDisabled) return;
+
+      var hsv = this.rgb2hsv(red, green, blue);
+
+      this._updateDisabled = true;
+      if (hsv[0] !== this.hue) this.set('hue', hsv[0]);
+      this._updateDisabled = false;
+    },
+
+    _setRGBFromHue: function (hue) {
+      if (this._updateDisabled) return;
+
+      var rgb = this.hsv2rgb(hue * 360, 1, 1);
 
       this._updateDisabled = true;
       if (this.red !== rgb[0]) this.set('red', rgb[0]);
@@ -3575,25 +3599,30 @@
       var x = c * (1 - Math.abs((h1 % 2) - 1));
       var m = v - c;
       var rgb;
-      if (typeof h == 'undefined') rgb = [0, 0, 0];
+      if (typeof h === undefined) rgb = [0, 0, 0];
       else if (h1 < 1) rgb = [c, x, 0];
       else if (h1 < 2) rgb = [x, c, 0];
       else if (h1 < 3) rgb = [0, c, x];
       else if (h1 < 4) rgb = [0, x, c];
       else if (h1 < 5) rgb = [x, 0, c];
       else if (h1 <= 6) rgb = [c, 0, x];
-      return [255 * (rgb[0] + m), 255 * (rgb[1] + m), 255 * (rgb[2] + m)];
+      return [
+        Math.round(255 * (rgb[0] + m)),
+        Math.round(255 * (rgb[1] + m)),
+        Math.round(255 * (rgb[2] + m))
+      ];
     },
 
     hsl2rgb: function (h, s, l) {
       var r, g, b;
+
       h /= 360;
-      if (s == 0) {
-        r = g = b = l; // achromatic
+      if (s === 0) {
+        r = g = b = l;
       } else {
         function hue2rgb (p, q, t) {
-          if (t < 0) t += 1;
-          if (t > 1) t -= 1;
+          if (t < 0) t++;
+          if (t > 1) t--;
           if (t < 1 / 6) return p + (q - p) * 6 * t;
           if (t < 1 / 2) return q;
           if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
@@ -3607,7 +3636,11 @@
         b = hue2rgb(p, q, h - 1 / 3);
       }
 
-      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+      return [
+        Math.round(r * 255),
+        Math.round(g * 255),
+        Math.round(b * 255)
+      ];
     },
 
     rgb2hsl: function (r, g, b) {
@@ -3615,16 +3648,18 @@
       var max = Math.max(r, g, b), min = Math.min(r, g, b);
       var h, s, l = (max + min) / 2;
 
-      if (max == min) {
+      if (max === min) {
         h = s = 0;
       } else {
-        var d = max - min;
+        var delta = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch(max) {
+
+        switch (max) {
           case r: h = (g - b) / d + (g < b ? 6 : 0); break;
           case g: h = (b - r) / d + 2; break;
           case b: h = (r - g) / d + 4; break;
         }
+
         h /= 6;
       }
 
@@ -3632,31 +3667,26 @@
     },
 
     rgb2hsv: function (r, g, b) {
-      var delta, h, max, min, s, v;
-      min = Math.min(r, g, b);
-      max = Math.max(r, g, b);
-      delta = max - min;
-      v = max / 255.0;
-      if (max === 0) {
-        h = Number.NaN;
-        s = 0;
+      r = r/255, g = g/255, b = b/255;
+      var max = Math.max(r, g, b), min = Math.min(r, g, b);
+      var h, s, v = max;
+      var d = max - min;
+
+      s = max === 0 ? 0 : d / max;
+
+      if (max == min) {
+        h = 0;
       } else {
-        s = delta / max;
-        if (r === max) {
-          h = (g - b) / delta;
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
         }
-        if (g === max) {
-          h = 2 + (b - r) / delta;
-        }
-        if (b === max) {
-          h = 4 + (r - g) / delta;
-        }
-        h *= 60;
-        if (h < 0) {
-          h += 360;
-        }
+
+        h /= 6;
       }
-      return [h / 360, s, v];
+
+      return [h, s, v];
     }
 
   };

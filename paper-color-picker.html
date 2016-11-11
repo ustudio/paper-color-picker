@@ -17,6 +17,7 @@ and to open the dialog
 <link href="../polymer/polymer.html" rel="import">
 <link href="../iron-a11y-keys/iron-a11y-keys.html" rel="import">
 <link href="../iron-flex-layout/iron-flex-layout.html" rel="import">
+<link href="../iron-resizable-behavior/iron-resizable-behavior.html" rel="import">
 <link href="../paper-slider/paper-slider.html" rel="import">
 <link href="../paper-dialog/paper-dialog.html" rel="import">
 <link href="../paper-button/paper-button.html" rel="import">
@@ -31,15 +32,15 @@ and to open the dialog
 
 <dom-module id="paper-color-picker">
   <style>
+    :host /deep/ .color-picker-dialog::shadow #scroller {
+      padding: 0;
+    }
+
     paper-color-circle {
       display: block;
       margin: auto;
       width: 200px;
       height: 200px;
-    }
-
-    :host /deep/ .color-picker-dialog::shadow #scroller {
-      padding: 0;
     }
 
     #container {
@@ -75,6 +76,10 @@ and to open the dialog
       margin: 15px;
       height: 15px;
       border-radius: 2px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
 
     .landscapeOnly, .portraitOnly {
@@ -123,8 +128,7 @@ and to open the dialog
 
     .buttons {
       margin-top: 20px;
-      padding-left: 0;
-      padding-right: 0;
+      padding: auto 0;
     }
 
     #color {
@@ -158,6 +162,7 @@ and to open the dialog
 
       #detail {
         padding-top: 20px;
+        width: 100%;
       }
 
       #details {
@@ -171,13 +176,12 @@ and to open the dialog
       }
 
       #preview{
-        width: 200px;
+        min-width: 200px;
       }
 
       #detail {
-        padding-top: 20px;
-        padding-left: 20px;
-        padding-right: 20px;
+        padding: 20px 20px 0;
+        width: 100%;
       }
 
       #container {
@@ -230,7 +234,7 @@ and to open the dialog
                 min="0"
                 max="1"
                 step="0.01"
-                secondary-progress="[[ initialState.brightness ]]"
+                secondary-progress="[[ _initialState.brightness ]]"
                 value="{{ brightness }}"
                 immediate-value="{{ brightness }}">
               </paper-slider>
@@ -246,7 +250,7 @@ and to open the dialog
                 min="0"
                 max="1"
                 step="0.01"
-                secondary-progress="[[ initialState.luminosity ]]"
+                secondary-progress="[[ _initialState.luminosity ]]"
                 value="{{ luminosity }}"
                 immediate-value="{{ luminosity }}">
               </paper-slider>
@@ -255,7 +259,7 @@ and to open the dialog
 
           <template is="dom-if" if="[[ _showHuePicker(shape) ]]">
             <paper-input-container attr-for-value="id">
-              <label for="huePicker">Hue: [[ hue ]]</label>
+              <label for="huePicker">Hue</label>
               <canvas
                 id="huePicker"
                 class="paper-input-input"
@@ -276,12 +280,16 @@ and to open the dialog
                 min="0"
                 max="1"
                 step="0.01"
-                secondary-progress="[[ initialState.alpha ]]"
+                secondary-progress="[[ _initialState.alpha ]]"
                 value="{{ alpha }}"
                 immediate-value="{{ alpha }}">
               </paper-slider>
             </paper-input-container>
           </template>
+
+          <div id="hex">
+            <hex-input id="hex-input" value="{{ hex }}"></hex-input>
+          </div>
 
           <div hidden$="[[ !advanced ]]">
             <div id="rgb">
@@ -291,9 +299,6 @@ and to open the dialog
                 green="{{ green }}"
                 blue="{{ blue }}">
               </rgb-input>
-            </div>
-            <div id="hex">
-              <hex-input id="hex-input" value="{{ hex }}"></hex-input>
             </div>
           </div>
 
@@ -325,7 +330,8 @@ and to open the dialog
       is: 'paper-color-picker',
 
       behaviors: [
-        PaperColorPicker.ColorBehavior
+        PaperColorPicker.ColorBehavior,
+        Polymer.IronResizableBehavior
       ],
 
       properties: {
@@ -422,22 +428,28 @@ and to open the dialog
       },
 
       listeners: {
-        'iron-overlay-canceled': 'resetState'
+        'iron-overlay-opened': '_onOpened',
+        'iron-overlay-canceled': 'resetState',
+        'iron-resize': '_onResize'
       },
 
       ready: function () {
         this.saveState();
+      },
 
-        window.addEventListener('resize', function () {
-          this.$.dialog.resetFit();
-        }.bind(this));
+      _onResize: function (e) {
+        this.$.dialog.refit();
+      },
+
+      _onOpened: function (e) {
+        this._drawHuePicker();
       },
 
       /**
        * Save the state of the color picker if we decide to cancel changes.
        */
       saveState: function () {
-        this.set('initialState', {
+        this.set('_initialState', {
           red: this.red,
           green: this.green,
           blue: this.blue,
@@ -455,15 +467,13 @@ and to open the dialog
        */
       resetState: function () {
         var self = this;
-        Object.keys(this.initialState).forEach(function (key) {
-          self.set(key, self.initialState[key]);
+        Object.keys(this._initialState).forEach(function (key) {
+          self.set(key, self._initialState[key]);
         });
       },
 
       _computeModeButtonText: function (advanced, basicButtonText, advancedButtonText) {
-        return advanced ?
-          basicButtonText :
-          advancedButtonText;
+        return advanced ?  basicButtonText : advancedButtonText;
       },
 
       _onEnterPressed: function () {
@@ -471,13 +481,15 @@ and to open the dialog
       },
 
       _drawHuePicker: function () {
+        if (this.shape !== 'huebox') return;
+
         var context = Polymer.dom(this.root)
           .querySelector('#huePicker').getContext('2d');
         var bitmap = context.getImageData(0, 0, 360, 30);
 
         for (var x = 0; x < 360; x++) {
           var hue = x;
-          var color = this.$.picker.hsv2rgb(hue, 1, 1);
+          var color = this.hsv2rgb(hue, 1, 1);
           bitmap.data[4 * x + 0] = color[0];
           bitmap.data[4 * x + 1] = color[1];
           bitmap.data[4 * x + 2] = color[2];
@@ -501,7 +513,6 @@ and to open the dialog
       open: function () {
         this.saveState();
         this.$.dialog.open();
-        if (this._showHuePicker()) this._drawHuePicker();
       },
 
       _showBrightnessSlider: function (shape, type) {
@@ -516,8 +527,8 @@ and to open the dialog
         return alwaysShowAlpha || (advanced && showAlpha);
       },
 
-      _showHuePicker: function () {
-        return this.shape === 'huebox';
+      _showHuePicker: function (shape) {
+        return shape === 'huebox';
       },
 
       _toggleAdvancedMode: function () {
