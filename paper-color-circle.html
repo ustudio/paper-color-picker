@@ -146,7 +146,7 @@
           if (distance < this.size / 100) return;
         }
 
-        if (color[3] > 0 && color[3] == 255) {
+        if (color[3] > 0 && color[3] === 255) {
           this.set('red', color[0]);
           this.set('green', color[1]);
           this.set('blue', color[2]);
@@ -183,7 +183,7 @@
           var width = size.width;
           var height = size.height;
 
-          if (width == 0 || height == 0) {
+          if (width === 0 || height === 0) {
             var computedStyle = window.getComputedStyle(this);
             width = parseInt(computedStyle.width);
             height = parseInt(computedStyle.height);
@@ -217,8 +217,8 @@
                     var value = Math.round(this.brightness * 1000) / 1000;
                     color = this.hsv2rgb(hue, saturation, value);
                   } else if (this.type === 'hsl') {
-                    var lightness = Math.round(this.lightness * 1000) / 1000;
-                    color = this.hsl2rgb(hue, saturation, lightness);
+                    var luminosity = Math.round(this.luminosity * 1000) / 1000;
+                    color = this.hsl2rgb(hue, saturation, luminosity);
                   }
                 };
               } else if (this.shape === 'huebox') {
@@ -237,8 +237,8 @@
                   var value = Math.round(this.brightness * 1000) / 1000;
                   color = this.hsv2rgb(hue, saturation, value);
                 } else if (this.type === 'hsl') {
-                  var lightness = Math.round(this.lightness * 1000) / 1000;
-                  color = this.hsl2rgb(hue, saturation, lightness);
+                  var luminosity = Math.round(this.luminosity * 1000) / 1000;
+                  color = this.hsl2rgb(hue, saturation, luminosity);
                 }
               }
 
@@ -289,11 +289,11 @@
 
       _colorChanged: function (red, green, blue) {
         if (!this._trackingColorChanges) {
-          if (this.type == 'hsl') {
+          if (this.type === 'hsl') {
             var hsl = this.rgb2hsl(red, green, blue);
             this.hue = hsl[0];
-            this.lightness = hsl[2];
-          } else if (this.type == 'hsv') {
+            this.luminosity = hsl[2];
+          } else if (this.type === 'hsv') {
             var hsv = this.rgb2hsv(red, green, blue);
             if (!isNaN(hsv[0])) this.hue = hsv[0];
             this.brightness = hsv[2];
