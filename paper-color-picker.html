@@ -47,6 +47,18 @@ and to open the dialog
       padding: 0;
     }
 
+    paper-input-container {
+      --paper-input-container-underline: {
+        display: none;
+      }
+      --paper-input-container-underline-focus: {
+        display: none;
+      }
+      --paper-input-container-underline-disabled: {
+        display: none;
+      }
+    }
+
     paper-slider {
       width: 100%;
     }
@@ -155,11 +167,11 @@ and to open the dialog
 
     @media only screen and (orientation : landscape) {
       :host {
-        width: 480px;
+        width: 500px;
       }
 
       #preview{
-        width: 185px;
+        width: 200px;
       }
 
       #detail {
@@ -211,14 +223,14 @@ and to open the dialog
 
           <template is="dom-if" if="[[ _showBrightnessSlider(shape, type) ]]">
             <paper-input-container attr-for-value="immediate-value">
-              <label>Brightness</label>
+              <label for="brightnessSlider">Brightness: [[ _computePercentage(brightness) ]]</label>
               <paper-slider
                 id="brightnessSlider"
                 class="paper-input-input"
                 min="0"
                 max="1"
                 step="0.01"
-                pin="true"
+                secondary-progress="[[ initialState.brightness ]]"
                 value="{{ brightness }}"
                 immediate-value="{{ brightness }}">
               </paper-slider>
@@ -227,14 +239,14 @@ and to open the dialog
 
           <template is="dom-if" if="[[ _showLuminositySlider(shape, type) ]]">
             <paper-input-container attr-for-value="immediate-value">
-              <label>Luminosity</label>
+              <label for="luminositySlider">Luminosity: [[ _computePercentage(luminosity) ]]</label>
               <paper-slider
                 id="luminositySlider"
                 class="paper-input-input"
                 min="0"
                 max="1"
                 step="0.01"
-                pin="true"
+                secondary-progress="[[ initialState.luminosity ]]"
                 value="{{ luminosity }}"
                 immediate-value="{{ luminosity }}">
               </paper-slider>
@@ -243,7 +255,7 @@ and to open the dialog
 
           <template is="dom-if" if="[[ _showHuePicker(shape) ]]">
             <paper-input-container attr-for-value="id">
-              <label>Hue</label>
+              <label for="huePicker">Hue: [[ hue ]]</label>
               <canvas
                 id="huePicker"
                 class="paper-input-input"
@@ -255,17 +267,16 @@ and to open the dialog
             </paper-input-container>
           </template>
 
-          <template is="dom-if" if="[[ showAlpha ]]">
-            <paper-input-container
-              attr-for-value="immediate-value"
-              hidden$="[[ !advanced ]]">
-              <label>Alpha (Transparency)</label>
+          <template is="dom-if" if="[[ _showTransparencySlider(advanced, showAlpha, alwaysShowAlpha) ]]">
+            <paper-input-container attr-for-value="immediate-value">
+              <label for="alphaSlider">Transparency: [[ _computePercentage(alpha) ]]</label>
               <paper-slider
                 id="alphaSlider"
                 class="paper-input-input"
                 min="0"
                 max="1"
                 step="0.01"
+                secondary-progress="[[ initialState.alpha ]]"
                 value="{{ alpha }}"
                 immediate-value="{{ alpha }}">
               </paper-slider>
@@ -319,6 +330,11 @@ and to open the dialog
 
       properties: {
         showAlpha: {
+          type: Boolean,
+          value: false
+        },
+
+        alwaysShowAlpha: {
           type: Boolean,
           value: false
         },
@@ -395,6 +411,7 @@ and to open the dialog
 
       ready: function () {
         this.saveState();
+
         window.addEventListener('resize', function () {
           this.$.dialog.resetFit();
         }.bind(this));
@@ -461,12 +478,16 @@ and to open the dialog
         if (this._showHuePicker()) this.drawHuePicker();
       },
 
-      _showBrightnessSlider: function () {
-        return this.type == 'hsv' && this.shape !== 'huebox';
+      _showBrightnessSlider: function (shape, type) {
+        return type === 'hsv' && shape !== 'huebox';
       },
 
-      _showLuminositySlider: function () {
-        return this.type == 'hsl' && this.shape !== 'huebox';
+      _showLuminositySlider: function (shape, type) {
+        return type === 'hsl' && shape !== 'huebox';
+      },
+
+      _showTransparencySlider: function (advanced, showAlpha, alwaysShowAlpha) {
+        return alwaysShowAlpha || (advanced && showAlpha);
       },
 
       _showHuePicker: function () {
@@ -479,6 +500,10 @@ and to open the dialog
 
       _recenterDialog: function () {
         if (this.$.dialog.opened) this.$.dialog.center();
+      },
+
+      _computePercentage: function (value) {
+        return Math.round(value * 100) + '%';
       }
 
     });
