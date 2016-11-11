@@ -52,11 +52,7 @@
 
       properties: {
         /**
-          * A AA border can be drawn to prevent jagged edges on circles
-          *
-          * @attribute colouredAaBorder
-          * @type boolean
-          * @default false
+          * If true, do *not* draw an anti-aliased border around the circle.
           */
         noAaBorder: {
           type: Boolean,
@@ -71,11 +67,7 @@
         },
 
         /**
-          * A coloured AA border can be drawn to prevent jagged edges on circles
-          *
-          * @attribute colouredAaBorder
-          * @type Array
-          * @default false
+          * If true, draw a colo(u)red, anti-aliased border around the circle.
           */
         colouredAaBorder: {
           type: Boolean,
@@ -84,11 +76,7 @@
         },
 
         /**
-          * square, circle or huebox
-          *
-          * @attribute shape
-          * @type string
-          * @default 'circle'
+          * Shape of the "circle": *square*, *circle*, or *huebox*.
           */
         shape: {
           type: String,
@@ -97,11 +85,7 @@
         },
 
         /**
-          * hsv OR hsl
-          *
-          * @attribute type
-          * @type string
-          * @default 'hsv'
+          * Type: *hsv* or *hsl*
           */
         type: {
           type: String,
@@ -109,7 +93,7 @@
           notify: true
         },
 
-        size: {
+        _size: {
           type: Number
         }
       },
@@ -138,12 +122,12 @@
         if (this.shape === 'circle') {
           var distance = Math.abs(
             Math.sqrt(
-              Math.pow(touchX - this.size / 2, 2) +
-              Math.pow(touchY - this.size / 2, 2)
-            ) - this.size / 2
+              Math.pow(touchX - this._size / 2, 2) +
+              Math.pow(touchY - this._size / 2, 2)
+            ) - this._size / 2
           );
 
-          if (distance < this.size / 100) return;
+          if (distance < this._size / 100) return;
         }
 
         if (color[3] > 0 && color[3] === 255) {
@@ -177,6 +161,9 @@
         })
       },
 
+      /**
+       * Force the circle to be redrawn.
+       */
       redraw: function () {
         this.debounce('redraw', function () {
           var size = this.getBoundingClientRect();
@@ -190,18 +177,18 @@
           }
 
           this.set('size', Math.floor(Math.min(width, height)));
-          this.$.canvas.width = this.size;
-          this.$.canvas.height = this.size;
-          this.$['ripple-container'].style.width = this.size + 'px';
-          this.$['ripple-container'].style.height = this.size + 'px';
+          this.$.canvas.width = this._size;
+          this.$.canvas.height = this._size;
+          this.$['ripple-container'].style.width = this._size + 'px';
+          this.$['ripple-container'].style.height = this._size + 'px';
 
-          var halfsize = this.size / 2;
-          var bitmap = this._ctx.getImageData(0, 0, this.size, this.size);
+          var halfsize = this._size / 2;
+          var bitmap = this._ctx.getImageData(0, 0, this._size, this._size);
 
-          for (var y = 0; y < this.size; y++) {
-            for (var x = 0; x < this.size; x++) {
+          for (var y = 0; y < this._size; y++) {
+            for (var x = 0; x < this._size; x++) {
               // offset for the 4 RGBA values in the data array
-              var offset = 4 * ((y * this.size) + x);
+              var offset = 4 * ((y * this._size) + x);
               var color = [255, 255, 255];
 
               if (this.shape === 'circle') {
@@ -224,7 +211,7 @@
               } else if (this.shape === 'huebox') {
                 var saturation = x / width;
                 var hue = Math.round(this.hue * 1000) / 1000 * 360;
-                var third = 1 - y / this.size;
+                var third = 1 - y / this._size;
                 if (this.type === 'hsv') {
                   color = this.hsv2rgb(hue, saturation, third);
                 } else if (this.type === 'hsl') {
@@ -232,7 +219,7 @@
                 }
               } else if (this.shape === 'square') {
                 var hue = x / width * 360;
-                var saturation = 1 - y / this.size;
+                var saturation = 1 - y / this._size;
                 if (this.type === 'hsv') {
                   var value = Math.round(this.brightness * 1000) / 1000;
                   color = this.hsv2rgb(hue, saturation, value);
@@ -252,12 +239,12 @@
           if (!this.noAaBorder && this.shape === 'circle') {
             // Getting a nice anti-aliased edge using canvas is hard,
             // so instead a white circle is drawn over the border
-            this.drawAACircle();
+            this._drawAACircle();
           }
         }, 1);
       },
 
-      drawAACircle: function () {
+      _drawAACircle: function () {
         if (this.colouredAaBorder) {
           if (this.green) {
             this.set('_ctx.strokeStyle',
@@ -271,10 +258,10 @@
         } else {
           this.set('_ctx.strokeStyle', 'rgba(255, 255, 255, 0.99)');
         }
-        this.set('_ctx.lineWidth', this.size / 100);
+        this.set('_ctx.lineWidth', this._size / 100);
         this._ctx.beginPath();
-        var borderRadius = this.size / 2;
-        this._ctx.arc(this.size / 2, this.size / 2, borderRadius - 1, 0, 2 * Math.PI, false);
+        var borderRadius = this._size / 2;
+        this._ctx.arc(this._size / 2, this._size / 2, borderRadius - 1, 0, 2 * Math.PI, false);
         this._ctx.closePath();
         this._ctx.stroke();
       },

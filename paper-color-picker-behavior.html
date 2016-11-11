@@ -4,6 +4,9 @@
   PaperColorPicker.ColorBehavior = {
 
     properties: {
+      /**
+        * The names and RGB values of many colors.
+        */
       colorNames: {
         type: Array,
         readonly: true,
@@ -3391,35 +3394,50 @@
         ]
       },
 
+      /**
+        * The red component of the current RGB value.
+        */
       red: {
         type: Number,
         value: 128,
         notify: true
       },
 
+      /**
+        * The green component of the current RGB value.
+        */
       green: {
         type: Number,
         value: 128,
         notify: true
       },
 
+      /**
+        * The blue component of the current RGB value.
+        */
       blue: {
         type: Number,
         value: 128,
         notify: true
       },
 
+      /**
+       * The alpha value, from 0 to 1.
+       */
       alpha: {
         type: Number,
         value: 1,
         notify: true
       },
 
-      backgroundStyle: {
+      _backgroundStyle: {
         type: String,
         computed: '_computeBackgroundStyle(red, green, blue, alpha)'
       },
 
+      /**
+       * The name of the current color.
+       */
       name: {
         type: String,
         value: '',
@@ -3427,23 +3445,35 @@
         notify: true
       },
 
+      /**
+       * The hex value of the current color.
+       */
       hex: {
         type: String,
         notify: true
       },
 
+      /**
+       * The hue value, from 0 to 1.
+       */
       hue: {
         type: Number,
         value: 0,
         notify: true
       },
 
+      /**
+       * The luminosity (or lightness) value, from 0 to 1.
+       */
       luminosity: {
         type: Number,
         value: 0.5,
         notify: true
       },
 
+      /**
+       * The brightness (or "value") value, from 0 to 1.
+       */
       brightness: {
         type: Number,
         value: 1.0,

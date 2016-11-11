@@ -103,10 +103,6 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       properties: {
         /**
          * The label for this input.
-         *
-         * @attribute label
-         * @type String
-         * @default ''
          */
         label: {
           type: String,
@@ -114,11 +110,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         },
 
         /**
-         * *square*, *circle* or *huebox*
-         *
-         * @attribute shape
-         * @type string
-         * @default 'circle'
+         * Shape for the color picker: *square*, *circle*, or *huebox*.
          */
         shape: {
           type: String,
@@ -127,11 +119,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         },
 
         /**
-         * *hsv* or *hsl*
-         *
-         * @attribute type
-         * @type string
-         * @default 'hsv'
+         * Type: *hsv* or *hsl*.
          */
         type: {
           type: String,
@@ -140,9 +128,9 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         },
 
         /**
-         * Whether to allow changing the transparency of the picked color
+         * If true, show a slider to adjust transparency in advanced mode.
          */
-        allowAlpha: {
+        showAlpha: {
           type: Boolean,
           value: false
         },
@@ -155,13 +143,16 @@ There are three different main configurations all 3 elements allow: `circle`, `s
           value: false
         },
 
+        /**
+         * If true, display a backdrop when opening the dialog.
+         */
         withBackdrop: {
           type: Boolean,
           value: false
         },
 
         /**
-         * Show alpha slider always instead of only in the advanced settings
+         * If true, always show the transparency slider.
          */
         alwaysShowAlpha: {
           type: Boolean,
@@ -173,6 +164,9 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         'input.tap': 'openColorPicker'
       },
 
+      /**
+       * Open the color picker.
+       */
       openColorPicker: function () {
         this.$.picker.open();
       }
