@@ -35,7 +35,7 @@
         id="input"
         type="text"
         bind-value="{{ value }}"
-        minlength="4"
+        minlength="6"
         maxlength="7"
         aria-label="hex color value"
         allowed-pattern="[#a-fA-F0-9]"
@@ -43,7 +43,7 @@
         invalid="{{ invalid }}"
         prevent-invalid-input
       />
-      <paper-input-error>Enter a 3- or 6-digit hex value</paper-input-error>
+      <paper-input-error>Enter a 6-digit hex value</paper-input-error>
     </paper-input-container>
 
   </template>
@@ -51,6 +51,7 @@
 
 <script>
   Polymer({
+
     is: 'hex-input',
 
     behaviors: [
@@ -58,23 +59,33 @@
     ],
 
     properties: {
+      /**
+       * If true, the hex color is invalid.
+       */
       invalid: {
         type: Boolean,
         value: false,
         notify: true
       },
 
+      /**
+       * Label for the hex color input.
+       */
       label: {
         type: String,
         value: 'Hex Value'
       },
 
+      /**
+       * Value of the hex color.
+       */
       value: {
         type: String,
         notify: true,
         reflectToAttribute: true,
-        value: '000'
+        value: '#808080'
       }
     }
+
   });
 </script>

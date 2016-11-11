@@ -74,6 +74,18 @@
         type: Number,
         value: 0
       }
+    },
+
+    listeners: {
+      'value-changed': '_onValueChanged'
+    },
+
+    _onValueChanged: function (e, obj) {
+      if (obj.value > 255) {
+        this.set('value', 255);
+      } else if (obj.value < 0) {
+        this.set('value', 0);
+      }
     }
 
   });

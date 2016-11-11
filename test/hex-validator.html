@@ -29,17 +29,13 @@
 
         input.validator = 'hex-validator';
 
-        assert.isTrue(input.validate('000'));
-        assert.isTrue(input.validate('#000'));
         assert.isTrue(input.validate('000000'));
         assert.isTrue(input.validate('#000000'));
         assert.isTrue(input.validate('Fe0ab8'));
         assert.isTrue(input.validate('#Fe0ab8'));
 
         assert.isFalse(input.validate(''));
-        assert.isFalse(input.validate('##000'));
         assert.isFalse(input.validate('#00000'));
-        assert.isFalse(input.validate('000#000'));
         assert.isFalse(input.validate('0000'));
         assert.isFalse(input.validate('00000'));
         assert.isFalse(input.validate('H00000'));

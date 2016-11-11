@@ -34,15 +34,24 @@
 
     <div class="container">
       <rgb-component-input
-        color="Red" value="{{ red }}" class="paper-input-input">
+        color="Red"
+        value="{{ red }}"
+        class="paper-input-input"
+        invalid="[[ _redInvalid ]]">
       </rgb-component-input>
 
       <rgb-component-input
-        color="Green" value="{{ green }}" class="paper-input-input">
+        color="Green"
+        value="{{ green }}"
+        class="paper-input-input"
+        invalid="[[ _greenInvalid ]]">
       </rgb-component-input>
 
       <rgb-component-input
-        color="Blue" value="{{ blue }}" class="paper-input-input">
+        color="Blue"
+        value="{{ blue }}"
+        class="paper-input-input"
+        invalid="[[ _blueInvalid ]]">
       </rgb-component-input>
     </div>
 
@@ -55,20 +64,48 @@
     is: 'rgb-input',
 
     properties: {
+      /**
+       * The red component of the RGB color.
+       */
       red: {
         type: Number,
         notify: true
       },
 
+      /**
+       * The green component of the RGB color.
+       */
       green: {
         type: Number,
         notify: true
       },
 
+      /**
+       * The blue component of the RGB color.
+       */
       blue: {
         type: Number,
         notify: true
+      },
+
+      _redInvalid: Boolean,
+
+      _greenInvalid: Boolean,
+
+      _blueInvalid: Boolean,
+
+      /**
+       * If true, one or more of the 3 component colors are invalid.
+       */
+      invalid: {
+        type: Boolean,
+        notify: true,
+        computed: '_computeInvalid(_redInvalid, _greenInvalid, _blueInvalid)'
       }
+    },
+
+    _computeInvalid: function (_redInvalid, _greenInvalid, _blueInvalid) {
+      return _redInvalid || _greenInvalid || _blueInvalid;
     }
 
   });
