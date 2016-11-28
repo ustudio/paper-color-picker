@@ -9,7 +9,7 @@
         */
       colorNames: {
         type: Array,
-        readonly: true,
+        readOnly: true,
         value: [
           {
             'rgb': [ 93, 138, 168 ],
@@ -3395,11 +3395,19 @@
       },
 
       /**
+       * The color object.
+       */
+      color: {
+        type: Object,
+        computed: '_computeValue(_color)',
+        notify: true
+      },
+
+      /**
         * The red component of the current RGB value.
         */
       red: {
         type: Number,
-        value: 128,
         notify: true
       },
 
@@ -3408,7 +3416,6 @@
         */
       green: {
         type: Number,
-        value: 128,
         notify: true
       },
 
@@ -3417,7 +3424,6 @@
         */
       blue: {
         type: Number,
-        value: 128,
         notify: true
       },
 
@@ -3430,7 +3436,7 @@
         notify: true
       },
 
-      _backgroundStyle: {
+      backgroundStyle: {
         type: String,
         computed: '_computeBackgroundStyle(red, green, blue, alpha)'
       },
@@ -3440,7 +3446,6 @@
        */
       name: {
         type: String,
-        value: '',
         computed: '_computeName(red, green, blue)',
         notify: true
       },
@@ -3458,7 +3463,6 @@
        */
       hue: {
         type: Number,
-        value: 0,
         notify: true
       },
 
@@ -3478,66 +3482,63 @@
         type: Number,
         value: 1.0,
         notify: true
-      },
-
-      _updateDisabled: {
-        type: Boolean,
-        value: false
       }
     },
 
     observers: [
-      '_setHexFromRGB(red, green, blue)',
-      '_setRGBFromHex(hex)'
-      // '_setHueFromRGB(red, green, blue)',
-      // '_setRGBFromHue(hue)'
+      'updateColor(red, green, blue, hex, hue)'
     ],
 
-    _setHexFromRGB: function (red, green, blue) {
-      if (this._updateDisabled) return;
-
-      var hex = this._convertRGBToHex(red, green, blue);
-
-      this._updateDisabled = true;
-      if (hex !== this.hex) this.set('hex', hex);
-      this._updateDisabled = false;
+    updateColor: function (red, green, blue, hex, hue) {
+      this.async(this.debounce(this._updateColor, this.didIt));
     },
 
-    _setRGBFromHex: function (hex) {
-      if (this._updateDisabled) return;
+    didIt: function () {
+      // console.log('DID IT');
+    },
 
+    _updateColor: function (red, green, blue, hex, hue) {
+      this.set('red', red);
+      this.set('green', green);
+      this.set('blue', blue);
+      this._onRGBChanged(red, green, blue);
+
+      this.set('hex', hex);
+      this._onHexChanged(hex);
+
+      this.set('hue', hue);
+      this._onHueChanged(hue);
+    },
+
+    _onRGBChanged: function (red, green, blue) {
+      var hex = this._convertRGBtoHex(red, green, blue);
+      var hsv = this._convertRGBtoHSV(red, green, blue);
+
+      if (this.hex !== hex) this.set('hex', hex);
+      if (this.hue !== hsv[0]) this.set('hue', hsv[0]);
+    },
+
+    _onHexChanged: function (hex) {
       var rgb = this._convertHexToRGB(hex);
+      var hsv = this._convertHexToHSV(hex);
 
-      this._updateDisabled = true;
       if (this.red !== rgb[0]) this.set('red', rgb[0]);
       if (this.green !== rgb[1]) this.set('green', rgb[1]);
       if (this.blue !== rgb[2]) this.set('blue', rgb[2]);
-      this._updateDisabled = false;
+      if (this.hue !== hsv[0]) this.set('hue', hsv[0]);
     },
 
-    _setHueFromRGB: function (red, green, blue) {
-      if (this._updateDisabled) return;
+    _onHueChanged: function (hue) {
+      var rgb = this._convertHSVtoRGB(hue * 360, 1, 1);
+      var hex = this._convertHSVtoHex(hue * 360, 1, 1);
 
-      var hsv = this.rgb2hsv(red, green, blue);
-
-      this._updateDisabled = true;
-      if (hsv[0] !== this.hue) this.set('hue', hsv[0]);
-      this._updateDisabled = false;
-    },
-
-    _setRGBFromHue: function (hue) {
-      if (this._updateDisabled) return;
-
-      var rgb = this.hsv2rgb(hue * 360, 1, 1);
-
-      this._updateDisabled = true;
       if (this.red !== rgb[0]) this.set('red', rgb[0]);
       if (this.green !== rgb[1]) this.set('green', rgb[1]);
       if (this.blue !== rgb[2]) this.set('blue', rgb[2]);
-      this._updateDisabled = false;
+      if (this.hex !== hex) this.set('hex', hex);
     },
 
-    _convertRGBToHex: function (red, green, blue) {
+    _convertRGBtoHex: function (red, green, blue) {
       var args = Array.prototype.slice.call(arguments);
       var rgb;
       var hex = '#';
@@ -3567,33 +3568,7 @@
       return rgb;
     },
 
-    _computeName: function (red, green, blue) {
-      var closest = {
-        color: undefined,
-        distance: Infinity
-      };
-
-      this.colorNames.forEach(function (color) {
-        var distance = Math.sqrt(
-          Math.pow(red - color.rgb[0], 2) +
-          Math.pow(green - color.rgb[1], 2) +
-          Math.pow(blue - color.rgb[2], 2)
-        );
-        if (distance < closest.distance) {
-          closest.color = color;
-          closest.distance = distance;
-        }
-      }.bind(this));
-
-      return closest.color.title;
-    },
-
-    _computeBackgroundStyle: function (red, green, blue, alpha) {
-      return 'background: rgba(' +
-        red + ', ' + green + ', ' + blue + ', ' + alpha + ');';
-    },
-
-    hsv2rgb: function (h, s, v) {
+    _convertHSVtoRGB: function (h, s, v) {
       var c = v * s;
       var h1 = h / 60;
       var x = c * (1 - Math.abs((h1 % 2) - 1));
@@ -3613,7 +3588,12 @@
       ];
     },
 
-    hsl2rgb: function (h, s, l) {
+    _convertHSVtoHex: function (h, s, v) {
+      var rgb = this._convertHSVtoRGB(h, s, v);
+      return this._convertRGBtoHex(rgb[0], rgb[1], rgb[2]);
+    },
+
+    _convertHSLtoRGB: function (h, s, l) {
       var r, g, b;
 
       h /= 360;
@@ -3643,7 +3623,7 @@
       ];
     },
 
-    rgb2hsl: function (r, g, b) {
+    _convertRGBtoHSL: function (r, g, b) {
       r /= 255, g /= 255, b /= 255;
       var max = Math.max(r, g, b), min = Math.min(r, g, b);
       var h, s, l = (max + min) / 2;
@@ -3666,7 +3646,7 @@
       return [h, s, l];
     },
 
-    rgb2hsv: function (r, g, b) {
+    _convertRGBtoHSV: function (r, g, b) {
       r = r/255, g = g/255, b = b/255;
       var max = Math.max(r, g, b), min = Math.min(r, g, b);
       var h, s, v = max;
@@ -3687,6 +3667,38 @@
       }
 
       return [h, s, v];
+    },
+
+    _convertHexToHSV: function (hex) {
+      var rgb = this._convertHexToRGB(hex);
+      return this._convertRGBtoHSV(rgb[0], rgb[1], rgb[2]);
+    },
+
+    _computeName: function (red, green, blue) {
+      var closest = {
+        color: null,
+        distance: Infinity
+      };
+
+      this.colorNames.forEach(function (color) {
+        var distance = Math.sqrt(
+          Math.pow(red - color.rgb[0], 2) +
+          Math.pow(green - color.rgb[1], 2) +
+          Math.pow(blue - color.rgb[2], 2)
+        );
+
+        if (distance < closest.distance) {
+          closest.color = color;
+          closest.distance = distance;
+        }
+      }.bind(this));
+
+      return closest.color.title;
+    },
+
+    _computeBackgroundStyle: function (red, green, blue, alpha) {
+      return 'background: rgba(' +
+        red + ', ' + green + ', ' + blue + ', ' + alpha + ');';
     }
 
   };

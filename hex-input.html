@@ -35,7 +35,7 @@
         id="input"
         type="text"
         bind-value="{{ value }}"
-        minlength="6"
+        minlength="1"
         maxlength="7"
         aria-label="hex color value"
         allowed-pattern="[#a-fA-F0-9]"
@@ -81,10 +81,33 @@
        */
       value: {
         type: String,
-        notify: true,
-        reflectToAttribute: true,
-        value: '#808080'
+        notify: true
       }
+    },
+
+    listeners: {
+      'value-changed': '_onValueChanged'
+    },
+
+    _onValueChanged: function (e, obj) {
+      var hex = obj.value;
+
+      if (hex[0] !== '#' || hex.indexOf('#', 1) > -1) {
+        hex = hex.replace(/#/g, '');
+        this.set('value', '#' + hex);
+        return;
+      }
+
+      if (/[a-f]/.test(hex)) {
+        this.set('value', hex.toUpperCase());
+        return;
+      }
+
+      if (hex.length > 7) {
+        this.set('value', '#' + hex.sub(1, 7));
+      };
+
+      return;
     }
 
   });

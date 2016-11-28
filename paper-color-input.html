@@ -50,11 +50,9 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         cursor: pointer;
       }
 
-      span.dark {
+      .description {
         font-size: 11px;
         color: rgba(0, 0, 0, 0.8);
-        font-family: monospace;
-        text-transform: uppercase;
       }
     </style>
 
@@ -63,14 +61,14 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       <label>[[ label ]]</label>
 
       <div class="paper-input-input">
-        <span>{{ name }}</span>&nbsp;<span
-          hidden$="{{ !withDescription }}" class="dark">
-          {{ hex }}
+        <span>[[ title ]]</span>&nbsp;<span
+          hidden$="[[ !withDescription ]]" class="description">
+          [[ description ]]
         </span>
       </div>
 
       <div id="color-preview" suffix>
-        <div id="color" style$="[[ _backgroundStyle ]]"></div>
+        <div id="color" style$="[[ backgroundStyle ]]"></div>
       </div>
 
     </paper-input-container>
@@ -84,6 +82,8 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       shape="{{ shape }}"
       type="{{ type }}"
       hex="{{ hex }}"
+      use-hex-as-title="{{ useHexAsTitle }}"
+      title="[[ title ]]"
       alpha="{{ alpha }}"
       allow-alpha="{{ allowAlpha }}"
       always-show-alpha="{{ alwaysShowAlpha }}"
@@ -136,7 +136,7 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         },
 
         /**
-         * Whether to show the color also as a string
+         * If true, show a description after the title.
          */
         withDescription: {
           type: Boolean,
@@ -152,11 +152,43 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         },
 
         /**
-         * If true, always show the transparency slider.
+         * If true, always show the transparency slider, not just
+         * when `advanced` mode is enabled.
          */
         alwaysShowAlpha: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * If true, use the hex color code as the title,
+         * and use the color name as the description. If false,
+         * use the color name as the title, and the hex color
+         * code as the description.
+         */
+        useHexAsTitle: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Automatically set. The color name or the hex color
+         * code representation. See: `useHexAsTitle`
+         */
+        title: {
+          type: String,
+          notify: true,
+          computed: '_computeTitle(hex, name, useHexAsTitle)'
+        },
+
+        /**
+         * Automatically set. The color name or the hex color
+         * code representation. See: `useHexAsTitle`
+         */
+        description: {
+          type: String,
+          notify: true,
+          computed: '_computeDescription(hex, name, useHexAsTitle)'
         }
       },
 
@@ -169,6 +201,14 @@ There are three different main configurations all 3 elements allow: `circle`, `s
        */
       openColorPicker: function () {
         this.$.picker.open();
+      },
+
+      _computeTitle: function (hex, name, useHexAsTitle) {
+        return useHexAsTitle ? hex : name;
+      },
+
+      _computeDescription: function (hex, name, useHexAsTitle) {
+        return useHexAsTitle ? name : hex;
       }
 
     });
