@@ -35,6 +35,15 @@
   <script>
     suite('basic', function () {
 
+      function timePasses(ms) {
+        if (ms === undefined) ms = 1;
+        return new Promise(function (resolve) {
+          window.setTimeout(function () {
+            resolve();
+          }, ms);
+        });
+      }
+
       suiteSetup(function () {
         Polymer({
           is: 'x-behavior-test',
@@ -45,64 +54,76 @@
       test('rgb value sets hex value', function () {
         var element = fixture('rgb-first');
 
-        assert.equal(element.hex, '#EF5323');
-        assert.equal(element.name, 'Flame');
+        return timePasses().then(function () {
+          assert.equal(element.hex, '#EF5323');
+          assert.equal(element.name, 'Flame');
+        });
       });
 
       test('hex value with lowercase letters sets rgb value', function () {
         var element = fixture('hex-first-uppercase');
 
-        assert.equal(element.red, 239);
-        assert.equal(element.green, 83);
-        assert.equal(element.blue, 35);
-        assert.equal(element.name, 'Flame');
+        return timePasses().then(function () {
+          assert.equal(element.red, 239);
+          assert.equal(element.green, 83);
+          assert.equal(element.blue, 35);
+          assert.equal(element.name, 'Flame');
+        });
       });
 
       test('hex value with uppercase letters sets rgb value', function () {
         var element = fixture('hex-first-uppercase');
 
-        assert.equal(element.red, 239);
-        assert.equal(element.green, 83);
-        assert.equal(element.blue, 35);
-        assert.equal(element.name, 'Flame');
+        return timePasses().then(function () {
+          assert.equal(element.red, 239);
+          assert.equal(element.green, 83);
+          assert.equal(element.blue, 35);
+          assert.equal(element.name, 'Flame');
+        });
       });
 
-      test('other values update when rgb value changes', function () {
+      test('other values update when red value changes', function () {
         var element = fixture('rgb-first');
 
         element.red = '128';
-        assert.equal(element.hex, '#805323');
-        assert.equal(element.name, 'Russet');
+        return timePasses().then(function () {
+          assert.equal(element.hex, '#805323');
+          assert.equal(element.name, 'Russet');
+        });
+      });
+
+      test('other values update when green value changes', function () {
+        var element = fixture('rgb-first');
 
         element.green = '255';
-        assert.equal(element.hex, '#80FF23');
-        assert.equal(element.name, 'Chartreuse');
+        return timePasses().then(function () {
+          assert.equal(element.hex, '#EFFF23');
+          assert.equal(element.name, 'Laser Lemon');
+        });
+      });
+
+      test('other values update when blue value changes', function () {
+        var element = fixture('rgb-first');
 
         element.blue = '10';
-        assert.equal(element.hex, '#80FF0A');
-        assert.equal(element.name, 'Chartreuse');
+        return timePasses().then(function () {
+          assert.equal(element.hex, '#EF530A');
+          assert.equal(element.name, 'Persimmon');
+        });
       });
 
       test('other values update when hex value changes', function () {
         var element = fixture('rgb-first');
 
         element.hex = '#805323';
-        assert.equal(element.red, 0x80);
-        assert.equal(element.green, 0x53);
-        assert.equal(element.blue, 0x23);
-        assert.equal(element.name, 'Russet');
-
-        element.hex = '#80FF23';
-        assert.equal(element.red, 0x80);
-        assert.equal(element.green, 0xFF);
-        assert.equal(element.blue, 0x23);
-        assert.equal(element.name, 'Chartreuse');
-
-        element.hex = '#80FF0A';
-        assert.equal(element.red, 0x80);
-        assert.equal(element.green, 0xFF);
-        assert.equal(element.blue, 0x0A);
-        assert.equal(element.name, 'Chartreuse');
+        console.log(element);
+        Polymer.dom.flush();
+        return timePasses(5).then(function () {
+          assert.equal(element.red, 0x80);
+          assert.equal(element.green, 0x53);
+          assert.equal(element.blue, 0x23);
+          assert.equal(element.name, 'Russet');
+        });
       });
 
     });

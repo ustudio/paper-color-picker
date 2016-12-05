@@ -359,11 +359,11 @@ and to open the dialog
         },
 
         /**
-          * Color picker type: *hsv* or *hsl*.
+          * Color picker type: *hsb* or *hsl*.
           */
         type: {
           type: String,
-          value: 'hsv'
+          value: 'hsb'
         },
 
         /**
@@ -472,6 +472,7 @@ and to open the dialog
           hex: this.hex,
           hue: this.hue,
           luminosity: this.luminosity,
+          saturation: this.saturation,
           brightness: this.brightness,
           alpha: this.alpha,
           advanced: this.advanced
@@ -505,7 +506,7 @@ and to open the dialog
 
         for (var x = 0; x < 360; x++) {
           var hue = x;
-          var color = this._convertHSVtoRGB(hue, 1, 1);
+          var color = this._convertHSBtoRGB(hue, 1, 1);
           bitmap.data[4 * x + 0] = color[0];
           bitmap.data[4 * x + 1] = color[1];
           bitmap.data[4 * x + 2] = color[2];
@@ -532,7 +533,7 @@ and to open the dialog
       },
 
       _showBrightnessSlider: function (shape, type) {
-        return type === 'hsv' && shape !== 'huebox';
+        return type === 'hsb' && shape !== 'huebox';
       },
 
       _showLuminositySlider: function (shape, type) {

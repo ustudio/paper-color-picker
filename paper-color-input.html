@@ -15,7 +15,7 @@ Shape and colour spaces
 ---
 There are three different main configurations all 3 elements allow: `circle`, `square`
  or `huebox`. This is called the `[shape]` of the color circle. Additionally in the case of `circle` and `square` it can
-  be specified whether the colours should be generated from the `hsv` or `hsl` colour space.
+  be specified whether the colours should be generated from the `hsb` or `hsl` colour space.
 
     <paper-color-input shape="square" type="hsl"></paper-color-input>
 
@@ -85,6 +85,9 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       use-hex-as-title="{{ useHexAsTitle }}"
       title="[[ title ]]"
       alpha="{{ alpha }}"
+      hue="{{ hue }}"
+      saturation="{{ saturation }}"
+      brightness="{{ brightness }}"
       allow-alpha="{{ allowAlpha }}"
       always-show-alpha="{{ alwaysShowAlpha }}"
       with-backdrop="[[ withBackdrop ]]"></paper-color-picker>
@@ -119,11 +122,11 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         },
 
         /**
-         * Type: *hsv* or *hsl*.
+         * Type: *hsb* or *hsl*.
          */
         type: {
           type: String,
-          value: 'hsv',
+          value: 'hsb',
           notify: true
         },
 

@@ -85,11 +85,11 @@
         },
 
         /**
-          * Type: *hsv* or *hsl*
+          * Type: *hsb* or *hsl*
           */
         type: {
           type: String,
-          value: 'hsv',
+          value: 'hsb',
           notify: true
         },
 
@@ -200,9 +200,9 @@
                   if (hue < 0) hue += 360;
                   var saturation = Math.round(distanceFromCenter * 1000) / 1000;
                   saturation = Math.min(1, saturation);
-                  if (this.type === 'hsv') {
+                  if (this.type === 'hsb') {
                     var value = Math.round(this.brightness * 1000) / 1000;
-                    color = this._convertHSVtoRGB(hue, saturation, value);
+                    color = this._convertHSBtoRGB(hue, saturation, value);
                   } else if (this.type === 'hsl') {
                     var luminosity = Math.round(this.luminosity * 1000) / 1000;
                     color = this._convertHSLtoRGB(hue, saturation, luminosity);
@@ -212,17 +212,17 @@
                 var saturation = x / width;
                 var hue = Math.round(this.hue * 1000) / 1000 * 360;
                 var third = 1 - y / this._size;
-                if (this.type === 'hsv') {
-                  color = this._convertHSVtoRGB(hue, saturation, third);
+                if (this.type === 'hsb') {
+                  color = this._convertHSBtoRGB(hue, saturation, third);
                 } else if (this.type === 'hsl') {
                   color = this._convertHSLtoRGB(hue, saturation, third);
                 }
               } else if (this.shape === 'square') {
                 var hue = x / width * 360;
                 var saturation = 1 - y / this._size;
-                if (this.type === 'hsv') {
+                if (this.type === 'hsb') {
                   var value = Math.round(this.brightness * 1000) / 1000;
-                  color = this._convertHSVtoRGB(hue, saturation, value);
+                  color = this._convertHSBtoRGB(hue, saturation, value);
                 } else if (this.type === 'hsl') {
                   var luminosity = Math.round(this.luminosity * 1000) / 1000;
                   color = this._convertHSLtoRGB(hue, saturation, luminosity);
@@ -280,10 +280,11 @@
             var hsl = this._convertRGBtoHSL(red, green, blue);
             this.set('hue', hsl[0]);
             this.set('luminosity', hsl[2]);
-          } else if (this.type === 'hsv') {
-            var hsv = this._convertRGBtoHSV(red, green, blue);
-            if (!isNaN(hsv[0])) this.set('hue', hsv[0]);
-            this.set('brightness', hsv[2]);
+          } else if (this.type === 'hsb') {
+            var hsb = this._convertRGBtoHSB(red, green, blue);
+            this.set('hue', hsb[0]);
+            this.set('saturation', hsb[1]);
+            this.set('brightness', hsb[2]);
           }
         }
       },

@@ -3395,15 +3395,6 @@
       },
 
       /**
-       * The color object.
-       */
-      color: {
-        type: Object,
-        computed: '_computeValue(_color)',
-        notify: true
-      },
-
-      /**
         * The red component of the current RGB value.
         */
       red: {
@@ -3476,6 +3467,15 @@
       },
 
       /**
+       * The saturation value, from 0 to 1.
+       */
+      saturation: {
+        type: Number,
+        value: 0.5,
+        notify: true
+      },
+
+      /**
        * The brightness (or "value") value, from 0 to 1.
        */
       brightness: {
@@ -3486,56 +3486,67 @@
     },
 
     observers: [
-      'updateColor(red, green, blue, hex, hue)'
+      'updateRGB(red, green, blue)',
+      'updateHex(hex)',
+      'updateHSB(hue, saturation, brightness)'
     ],
 
-    updateColor: function (red, green, blue, hex, hue) {
-      this.async(this.debounce(this._updateColor, this.didIt));
+    updateRGB: function (red, green, blue) {
+      this.debounce('updateRGB', function () {
+        this._onRGBChanged(red, green, blue);
+      });
     },
 
-    didIt: function () {
-      // console.log('DID IT');
+    updateHex: function (hex) {
+      this.debounce('updateHex', function () {
+        this._onHexChanged(hex);
+      });
     },
 
-    _updateColor: function (red, green, blue, hex, hue) {
-      this.set('red', red);
-      this.set('green', green);
-      this.set('blue', blue);
-      this._onRGBChanged(red, green, blue);
+    updateHSB: function (hue, saturation, brightness) {
+      this.debounce('updateHSB', function () {
+        this._onHSBChanged(hue, saturation, brightness);
+      });
+    },
 
-      this.set('hex', hex);
-      this._onHexChanged(hex);
+    _setRGB: function (red, green, blue) {
+      if (this.red !== red) this.set('red', red);
+      if (this.green !== green) this.set('green', green);
+      if (this.blue !== blue) this.set('blue', blue);
+    },
 
-      this.set('hue', hue);
-      this._onHueChanged(hue);
+    _setHSB: function (hue, saturation, brightness) {
+      if (this.hue !== hue) this.set('hue', hue);
+      if (this.saturation !== saturation) this.set('saturation', saturation);
+      if (this.brightness !== brightness) this.set('brightness', brightness);
+    },
+
+    _setHex: function (hex) {
+      if (this.hex !== hex) this.set('hex', hex);
     },
 
     _onRGBChanged: function (red, green, blue) {
       var hex = this._convertRGBtoHex(red, green, blue);
-      var hsv = this._convertRGBtoHSV(red, green, blue);
+      var hsb = this._convertRGBtoHSB(red, green, blue);
 
-      if (this.hex !== hex) this.set('hex', hex);
-      if (this.hue !== hsv[0]) this.set('hue', hsv[0]);
+      this._setHex(hex);
+      this._setHSB(hsb[0], hsb[1], hsb[2]);
     },
 
     _onHexChanged: function (hex) {
       var rgb = this._convertHexToRGB(hex);
-      var hsv = this._convertHexToHSV(hex);
+      var hsb = this._convertHexToHSB(hex);
 
-      if (this.red !== rgb[0]) this.set('red', rgb[0]);
-      if (this.green !== rgb[1]) this.set('green', rgb[1]);
-      if (this.blue !== rgb[2]) this.set('blue', rgb[2]);
-      if (this.hue !== hsv[0]) this.set('hue', hsv[0]);
+      this._setRGB(rgb[0], rgb[1], rgb[2]);
+      this._setHSB(hsb[0], hsb[1], hsb[2]);
     },
 
-    _onHueChanged: function (hue) {
-      var rgb = this._convertHSVtoRGB(hue * 360, 1, 1);
-      var hex = this._convertHSVtoHex(hue * 360, 1, 1);
+    _onHSBChanged: function (hue, saturation, brightness) {
+      var rgb = this._convertHSBtoRGB(hue * 360, saturation, brightness);
+      var hex = this._convertHSBtoHex(hue * 360, saturation, brightness);
 
-      if (this.red !== rgb[0]) this.set('red', rgb[0]);
-      if (this.green !== rgb[1]) this.set('green', rgb[1]);
-      if (this.blue !== rgb[2]) this.set('blue', rgb[2]);
-      if (this.hex !== hex) this.set('hex', hex);
+      this._setRGB(rgb[0], rgb[1], rgb[2]);
+      this._setHex(hex);
     },
 
     _convertRGBtoHex: function (red, green, blue) {
@@ -3568,13 +3579,13 @@
       return rgb;
     },
 
-    _convertHSVtoRGB: function (h, s, v) {
-      var c = v * s;
-      var h1 = h / 60;
+    _convertHSBtoRGB: function (hue, saturation, brightness) {
+      var c = brightness * saturation;
+      var h1 = hue / 60;
       var x = c * (1 - Math.abs((h1 % 2) - 1));
-      var m = v - c;
-      var rgb;
-      if (typeof h === undefined) rgb = [0, 0, 0];
+      var m = brightness - c;
+      var rgb = [0, 0, 0];
+      if (typeof hue === undefined) return rgb;
       else if (h1 < 1) rgb = [c, x, 0];
       else if (h1 < 2) rgb = [x, c, 0];
       else if (h1 < 3) rgb = [0, c, x];
@@ -3588,8 +3599,8 @@
       ];
     },
 
-    _convertHSVtoHex: function (h, s, v) {
-      var rgb = this._convertHSVtoRGB(h, s, v);
+    _convertHSBtoHex: function (hue, saturation, brightness) {
+      var rgb = this._convertHSBtoRGB(hue, saturation, brightness);
       return this._convertRGBtoHex(rgb[0], rgb[1], rgb[2]);
     },
 
@@ -3646,32 +3657,35 @@
       return [h, s, l];
     },
 
-    _convertRGBtoHSV: function (r, g, b) {
-      r = r/255, g = g/255, b = b/255;
-      var max = Math.max(r, g, b), min = Math.min(r, g, b);
-      var h, s, v = max;
-      var d = max - min;
+    _convertRGBtoHSB: function (red, green, blue) {
+      red = red / 255;
+      green = green / 255;
+      blue = blue / 255;
+      var max = Math.max(red, green, blue);
+      var min = Math.min(red, green, blue);
+      var hue, saturation, brightness = max;
+      var delta = max - min;
 
-      s = max === 0 ? 0 : d / max;
+      saturation = max === 0 ? 0 : delta / max;
 
-      if (max == min) {
-        h = 0;
+      if (max === min) {
+        hue = 0;
       } else {
         switch (max) {
-          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-          case g: h = (b - r) / d + 2; break;
-          case b: h = (r - g) / d + 4; break;
+          case red: hue = (green - blue) / delta + (green < blue ? 6 : 0); break;
+          case green: hue = (blue - red) / delta + 2; break;
+          case blue: hue = (red - green) / delta + 4; break;
         }
 
-        h /= 6;
+        hue /= 6;
       }
 
-      return [h, s, v];
+      return [hue, saturation, brightness];
     },
 
-    _convertHexToHSV: function (hex) {
+    _convertHexToHSB: function (hex) {
       var rgb = this._convertHexToRGB(hex);
-      return this._convertRGBtoHSV(rgb[0], rgb[1], rgb[2]);
+      return this._convertRGBtoHSB(rgb[0], rgb[1], rgb[2]);
     },
 
     _computeName: function (red, green, blue) {
