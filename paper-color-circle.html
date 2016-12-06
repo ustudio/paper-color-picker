@@ -189,7 +189,7 @@
             for (var x = 0; x < this._size; x++) {
               // offset for the 4 RGBA values in the data array
               var offset = 4 * ((y * this._size) + x);
-              var color = [255, 255, 255];
+              var color = { r: 255, g: 255, b: 255, a: 1 };
 
               if (this.shape === 'circle') {
                 var distanceFromCenter = Math.sqrt(
@@ -229,9 +229,9 @@
                 }
               }
 
-              bitmap.data[offset + 0] = color[0];
-              bitmap.data[offset + 1] = color[1];
-              bitmap.data[offset + 2] = color[2];
+              bitmap.data[offset + 0] = color.r;
+              bitmap.data[offset + 1] = color.g;
+              bitmap.data[offset + 2] = color.b;
               bitmap.data[offset + 3] = 255; // no transparency
             };
           };
@@ -278,13 +278,14 @@
         if (!this._trackingColorChanges) {
           if (this.type === 'hsl') {
             var hsl = this._convertRGBtoHSL(red, green, blue);
-            this.set('hue', hsl[0]);
-            this.set('luminosity', hsl[2]);
+            this.set('hue', hsl.h);
+            this.set('saturation', hsl.s);
+            this.set('luminosity', hsl.l);
           } else if (this.type === 'hsb') {
             var hsb = this._convertRGBtoHSB(red, green, blue);
-            this.set('hue', hsb[0]);
-            this.set('saturation', hsb[1]);
-            this.set('brightness', hsb[2]);
+            this.set('hue', hsb.h);
+            this.set('saturation', hsb.s);
+            this.set('brightness', hsb.v);
           }
         }
       },

@@ -104,13 +104,11 @@ and to open the dialog
       @apply(--paper-font-common-base);
       font-size: 28px;
       font-weight: 400;
-      letter-spacing: -0.01em;
       line-height: 38px;
       overflow: hidden;
       text-overflow: ellipsis;
       padding: 20px;
       padding-bottom: 30px;
-      text-shadow: rgba(0, 0, 0, 0.1) 0 0 20px, rgba(0, 0, 0, 0.6) 1px 1px 5px;
     }
 
     #preview {
@@ -205,7 +203,7 @@ and to open the dialog
 
       <div id="preview">
         <div id="color" style$="[[ backgroundStyle ]]"></div>
-        <div id="title">[[ title ]]</div>
+        <div id="title" style$="[[ titleStyle ]]">[[ title ]]</div>
       </div>
 
       <div id="detail">
@@ -219,6 +217,7 @@ and to open the dialog
           green="{{ green }}"
           blue="{{ blue }}"
           hue="{{ hue }}"
+          saturation="{{ saturation }}"
           luminosity="{{ luminosity }}">
         </paper-color-circle>
 
@@ -507,9 +506,9 @@ and to open the dialog
         for (var x = 0; x < 360; x++) {
           var hue = x;
           var color = this._convertHSBtoRGB(hue, 1, 1);
-          bitmap.data[4 * x + 0] = color[0];
-          bitmap.data[4 * x + 1] = color[1];
-          bitmap.data[4 * x + 2] = color[2];
+          bitmap.data[4 * x + 0] = color.r;
+          bitmap.data[4 * x + 1] = color.g;
+          bitmap.data[4 * x + 2] = color.b;
           bitmap.data[4 * x + 3] = 255;
         }
 
