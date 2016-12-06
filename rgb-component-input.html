@@ -40,7 +40,7 @@
         aria-label="[[ color ]] value from 0 to 255"
         allowed-pattern="[0-9]"
         validator="rgb-component-validator"
-        invalid="[[ invalid ]]"
+        invalid="{{ invalid }}"
         prevent-invalid-input
       />
       <paper-input-error>0 - 255</paper-input-error>
@@ -80,10 +80,9 @@
     },
 
     _onValueChanged: function (e, obj) {
-      var value = parseInt(obj.value, 10);
-      if (value > 255) {
+      if (obj.value > 255) {
         this.set('value', 255);
-      } else if (value < 0) {
+      } else if (obj.value < 0) {
         this.set('value', 0);
       }
     }

@@ -42,11 +42,9 @@
         assert.equal(element._initialState.blue, 35);
 
         runAfterOpen(element, function () {
-          // element.hex = '#00FF00';
-          element.red = 0;
+          element.hex = '#00FF00';
 
           element.addEventListener('iron-overlay-closed', function (event) {
-            assert.equal(element.hex, '#');
             assert.equal(element.red, 239);
             assert.equal(element.green, 83);
             assert.equal(element.blue, 35);
