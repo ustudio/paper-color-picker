@@ -215,8 +215,8 @@ There are three different main configurations all 3 elements allow: `circle`, `s
       },
 
       updateColor: function (e, obj) {
-        this.set('hex', obj.hex);
-        this._onHexChanged(obj.hex);
+        this._setRGB(obj);
+        this._onRGBChanged(obj);
       },
 
       // computed values

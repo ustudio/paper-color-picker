@@ -71,6 +71,10 @@ and to open the dialog
       margin: -1px 0 0 0;
     }
 
+    iron-a11y-keys {
+      display: none;
+    }
+
     #huePicker {
       width: 255px;
       margin: 15px;
@@ -451,10 +455,26 @@ and to open the dialog
       listeners: {
         'iron-overlay-opened': '_onOpened',
         'iron-overlay-canceled': 'resetState',
-        'iron-resize': '_onResize'
+        'iron-resize': '_onResize',
+        'rgb-changed': '_onCircleClicked'
       },
 
       ready: function () {
+        if (this.hex !== undefined) {
+          this._onHexChanged(this.hex);
+        } else if (this.red !== undefined &&
+                   this.green !== undefined &&
+                   this.blue !== undefined) {
+          this._onRGBChanged(this.red, this.green, this.blue);
+        } else if (this.hue !== undefined &&
+                   this.saturation !== undefined &&
+                   this.brightness !== undefined) {
+          this._onHSBChanged(this.hue, this.saturation, this.brightness);
+        } else if (this.hue !== undefined &&
+                   this.saturation !== undefined &&
+                   this.luminosity !== undefined) {
+          this._onHSLChanged(this.hue, this.saturation, this.luminosity);
+        }
         this.saveState();
       },
 
@@ -464,6 +484,15 @@ and to open the dialog
 
       _onOpened: function (e) {
         this._drawHuePicker();
+      },
+
+      _onCircleClicked: function (e, obj) {
+        this.cancelDebouncer('circleClicked');
+        this.debounce('circleClicked', function () {
+          this._setRGB(obj);
+          this._onRGBChanged(obj.r, obj.g, obj.b);
+          console.log(this.hex, this.name);
+        }, 1);
       },
 
       /**
@@ -495,7 +524,7 @@ and to open the dialog
       },
 
       acceptChanges: function () {
-        this.fire('update-color', { hex: this.hex });
+        this.fire('update-color', { r: this.red, g: this.green, b: this.blue });
       },
 
       _computeModeButtonText: function (advanced, basicButtonText, advancedButtonText) {
@@ -531,7 +560,7 @@ and to open the dialog
           .querySelector('#huePicker').getBoundingClientRect();
         var percentage = (e.detail.x - rect.left) / rect.width;
         if (percentage >= 0 && percentage <= 1)
-          this.set('hue', percentage);
+          this.set('hue', percentage * 360);
       },
 
       /**

@@ -3400,24 +3400,21 @@
         * The red component of the current RGB value.
         */
       red: {
-        type: Number,
-        // value: 255
+        type: Number
       },
 
       /**
         * The green component of the current RGB value.
         */
       green: {
-        type: Number,
-        // value: 255
+        type: Number
       },
 
       /**
         * The blue component of the current RGB value.
         */
       blue: {
-        type: Number,
-        // value: 255
+        type: Number
       },
 
       /**
@@ -3465,60 +3462,41 @@
        * The hex value of the current color.
        */
       hex: {
-        type: String,
-        // value: '#000000'
+        type: String
       },
 
       /**
        * The hue value, from 0 to 359.
        */
       hue: {
-        type: Number,
-        // value: 0
+        type: Number
       },
 
       /**
        * The luminosity (or lightness) value, from 0 to 1.
        */
       luminosity: {
-        type: Number,
-        // value: 0.5
+        type: Number
       },
 
       /**
        * The saturation value, from 0 to 1.
        */
       saturation: {
-        type: Number,
-        // value: 0.5
+        type: Number
       },
 
       /**
        * The brightness (or "value") value, from 0 to 1.
        */
       brightness: {
-        type: Number,
-        // value: 1
+        type: Number
       },
 
       _isLocked: {
         type: Boolean,
         value: false
       }
-    },
-
-    listeners: {
-      'red-changed': '_spyOnChange',
-      'green-changed': '_spyOnChange',
-      'blue-changed': '_spyOnChange',
-      'hex-changed': '_spyOnChange',
-      'hue-changed': '_spyOnChange',
-      'saturation-changed': '_spyOnChange',
-      'brightness-changed': '_spyOnChange'
-    },
-
-    _spyOnChange: function (e, detail) {
-      console.log(e.target, e.type, detail.value);
     },
 
     // observers

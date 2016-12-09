@@ -50,6 +50,11 @@
 
       is: 'paper-color-circle',
 
+      behaviors: [
+        Polymer.IronResizableBehavior,
+        PaperColorPicker.ColorBehavior
+      ],
+
       properties: {
         /**
          * If true and the *shape* is *circle*, do *not* draw
@@ -108,11 +113,6 @@
         '_colorChanged(red, green, blue)'
       ],
 
-      behaviors: [
-        Polymer.IronResizableBehavior,
-        PaperColorPicker.ColorBehavior
-      ],
-
       listeners: {
         'iron-resize': 'redraw'
       },
@@ -134,7 +134,7 @@
           if (distance < this._size / 100) return;
         }
 
-        if (color[3] > 0 && color[3] === 255) {
+        if (color[3] === 255) {
           this.set('red', color[0]);
           this.set('green', color[1]);
           this.set('blue', color[2]);
@@ -153,6 +153,11 @@
       },
 
       _onUp: function (e) {
+        this.cancelDebouncer('updateRGB');
+        this.debounce('updateRGB', function () {
+          this.fire('rgb-changed', { r: this.red, g: this.green, b: this.blue });
+        }, 1);
+
         this.set('_trackingColorChanges', false);
         this.$.ripple.style.color = 'rgb(' +
           this.red + ', ' +
@@ -213,8 +218,8 @@
                   }
                 };
               } else if (this.shape === 'huebox') {
-                var saturation = x / width;
                 var hue = Math.round(this.hue * 1000) / 1000 * 360;
+                var saturation = x / width;
                 var third = 1 - y / this._size;
                 if (this.type === 'hsb' || this.type === 'hsv') {
                   color = this._convertHSBtoRGB(hue, saturation, third);
@@ -225,8 +230,8 @@
                 var hue = x / width * 360;
                 var saturation = 1 - y / this._size;
                 if (this.type === 'hsb' || this.type === 'hsv') {
-                  var value = Math.round(this.brightness * 1000) / 1000;
-                  color = this._convertHSBtoRGB(hue, saturation, value);
+                  var brightness = Math.round(this.brightness * 1000) / 1000;
+                  color = this._convertHSBtoRGB(hue, saturation, brightness);
                 } else if (this.type === 'hsl') {
                   var luminosity = Math.round(this.luminosity * 1000) / 1000;
                   color = this._convertHSLtoRGB(hue, saturation, luminosity);
