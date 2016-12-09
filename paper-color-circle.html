@@ -52,11 +52,37 @@
 
       properties: {
         /**
-          * If true, do *not* draw an anti-aliased border around the circle.
-          */
+         * If true and the *shape* is *circle*, do *not* draw
+         * an anti-aliased border around the circle.
+         */
         noAaBorder: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * If the *shape* is *circle*, draw a colored
+         * anti-aliased border around the circle.
+         */
+        coloredAaBorder: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+          * *square*, *circle*, or *huebox*
+          */
+        shape: {
+          type: String,
+          value: 'circle'
+        },
+
+        /**
+          * Type: *hsb*, *hsv*, or *hsl*
+          */
+        type: {
+          type: String,
+          value: 'hsb'
         },
 
         _ctx: {
@@ -66,35 +92,13 @@
           }
         },
 
-        /**
-          * If true, draw a colo(u)red, anti-aliased border around the circle.
-          */
-        colouredAaBorder: {
-          type: Boolean,
-          value: false,
-          notify: true
-        },
-
-        /**
-          * Shape of the "circle": *square*, *circle*, or *huebox*.
-          */
-        shape: {
-          type: String,
-          value: 'circle',
-          notify: true
-        },
-
-        /**
-          * Type: *hsb* or *hsl*
-          */
-        type: {
-          type: String,
-          value: 'hsb',
-          notify: true
-        },
-
         _size: {
           type: Number
+        },
+
+        _trackingColorChanges: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -134,7 +138,7 @@
           this.set('red', color[0]);
           this.set('green', color[1]);
           this.set('blue', color[2]);
-          if (!this.noAaBorder && this.colouredAaBorder)
+          if (!this.noAaBorder && this.coloredAaBorder)
             this.redraw();
         }
       },
@@ -200,7 +204,7 @@
                   if (hue < 0) hue += 360;
                   var saturation = Math.round(distanceFromCenter * 1000) / 1000;
                   saturation = Math.min(1, saturation);
-                  if (this.type === 'hsb') {
+                  if (this.type === 'hsb' || this.type === 'hsv') {
                     var value = Math.round(this.brightness * 1000) / 1000;
                     color = this._convertHSBtoRGB(hue, saturation, value);
                   } else if (this.type === 'hsl') {
@@ -212,7 +216,7 @@
                 var saturation = x / width;
                 var hue = Math.round(this.hue * 1000) / 1000 * 360;
                 var third = 1 - y / this._size;
-                if (this.type === 'hsb') {
+                if (this.type === 'hsb' || this.type === 'hsv') {
                   color = this._convertHSBtoRGB(hue, saturation, third);
                 } else if (this.type === 'hsl') {
                   color = this._convertHSLtoRGB(hue, saturation, third);
@@ -220,7 +224,7 @@
               } else if (this.shape === 'square') {
                 var hue = x / width * 360;
                 var saturation = 1 - y / this._size;
-                if (this.type === 'hsb') {
+                if (this.type === 'hsb' || this.type === 'hsv') {
                   var value = Math.round(this.brightness * 1000) / 1000;
                   color = this._convertHSBtoRGB(hue, saturation, value);
                 } else if (this.type === 'hsl') {
@@ -235,33 +239,33 @@
               bitmap.data[offset + 3] = 255; // no transparency
             };
           };
+
           this._ctx.putImageData(bitmap, 0, 0);
+
           if (!this.noAaBorder && this.shape === 'circle') {
-            // Getting a nice anti-aliased edge using canvas is hard,
-            // so instead a white circle is drawn over the border
             this._drawAACircle();
           }
         }, 1);
       },
 
       _drawAACircle: function () {
-        if (this.colouredAaBorder) {
-          if (this.green) {
-            this.set('_ctx.strokeStyle',
-                     'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')');
-          } else {
-            this.set('_ctx.strokeStyle', 'rgb(' +
-                     this.colouredAaBorder[0] + ',' +
-                     this.colouredAaBorder[1] + ',' +
-                     this.colouredAaBorder[2] + ')');
-          }
+        if (this.coloredAaBorder) {
+          this.set('_ctx.strokeStyle',
+                    'rgb(' +
+                    this.red + ',' +
+                    this.green + ',' +
+                    this.blue + ')');
         } else {
           this.set('_ctx.strokeStyle', 'rgba(255, 255, 255, 0.99)');
         }
-        this.set('_ctx.lineWidth', this._size / 100);
+        this.set('_ctx.lineWidth', this._size / 85);
         this._ctx.beginPath();
         var borderRadius = this._size / 2;
-        this._ctx.arc(this._size / 2, this._size / 2, borderRadius - 1, 0, 2 * Math.PI, false);
+        this._ctx.arc(
+          this._size / 2, this._size / 2,
+          borderRadius - 1, 0, 2 * Math.PI,
+          false
+        );
         this._ctx.closePath();
         this._ctx.stroke();
       },
@@ -281,7 +285,7 @@
             this.set('hue', hsl.h);
             this.set('saturation', hsl.s);
             this.set('luminosity', hsl.l);
-          } else if (this.type === 'hsb') {
+          } else if (this.type === 'hsb' || this.type === 'hsv') {
             var hsb = this._convertRGBtoHSB(red, green, blue);
             this.set('hue', hsb.h);
             this.set('saturation', hsb.s);

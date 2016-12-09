@@ -3401,8 +3401,7 @@
         */
       red: {
         type: Number,
-        value: 255,
-        notify: true
+        // value: 255
       },
 
       /**
@@ -3410,8 +3409,7 @@
         */
       green: {
         type: Number,
-        value: 255,
-        notify: true
+        // value: 255
       },
 
       /**
@@ -3419,8 +3417,7 @@
         */
       blue: {
         type: Number,
-        value: 255,
-        notify: true
+        // value: 255
       },
 
       /**
@@ -3428,20 +3425,11 @@
        */
       alpha: {
         type: Number,
-        value: 1,
-        notify: true
+        value: 1
       },
 
       /**
-       * Style to be applied to the color title.
-       */
-      titleStyle: {
-        type: String,
-        computed: '_computeTitleStyle(hex)'
-      },
-
-      /**
-       * Style to be applied to the color preview.
+       * Style to be applied to the color preview. Automatically set.
        */
       backgroundStyle: {
         type: String,
@@ -3449,12 +3437,28 @@
       },
 
       /**
+      * Style to be applied to the color title. Automatically set.
+      */
+      titleStyle: {
+        type: String,
+        computed: '_computeTitleStyle(hex)'
+      },
+
+      /**
        * The name of the current color.
        */
       name: {
         type: String,
-        computed: '_computeName(red, green, blue)',
-        notify: true
+        computed: '_computeName(red, green, blue)'
+      },
+
+      /**
+        * The color name or the hex color
+        * code representation. Automatically set.
+        */
+      title: {
+        type: String,
+        computed: '_computeTitle(hex, name, useHexAsTitle)'
       },
 
       /**
@@ -3462,8 +3466,7 @@
        */
       hex: {
         type: String,
-        value: '#000000',
-        notify: true
+        // value: '#000000'
       },
 
       /**
@@ -3471,8 +3474,7 @@
        */
       hue: {
         type: Number,
-        value: 0,
-        notify: true
+        // value: 0
       },
 
       /**
@@ -3480,8 +3482,7 @@
        */
       luminosity: {
         type: Number,
-        value: 0.5,
-        notify: true
+        // value: 0.5
       },
 
       /**
@@ -3489,8 +3490,7 @@
        */
       saturation: {
         type: Number,
-        value: 0.5,
-        notify: true
+        // value: 0.5
       },
 
       /**
@@ -3498,72 +3498,94 @@
        */
       brightness: {
         type: Number,
-        value: 1,
-        notify: true
+        // value: 1
+      },
+
+      _isLocked: {
+        type: Boolean,
+        value: false
       }
     },
 
-    observers: [
-      '_onRGBChanged(red, green, blue)',
-      '_onHexChanged(hex)',
-      '_onHSBChanged(hue, saturation, brightness)'
-    ],
+    listeners: {
+      'red-changed': '_spyOnChange',
+      'green-changed': '_spyOnChange',
+      'blue-changed': '_spyOnChange',
+      'hex-changed': '_spyOnChange',
+      'hue-changed': '_spyOnChange',
+      'saturation-changed': '_spyOnChange',
+      'brightness-changed': '_spyOnChange'
+    },
+
+    _spyOnChange: function (e, detail) {
+      console.log(e.target, e.type, detail.value);
+    },
 
     // observers
 
     _onHexChanged: function (hex) {
-      this.debounce('updateHex', function () {
-        this._updateHex(hex);
-        this.cancelDebouncer('updateHSB');
-        this.cancelDebouncer('updateRGB');
-      }, 1);
+      if (hex.length < 7) return;
+
+      if (!this._isLocked) {
+        this._isLocked = true;
+        this.debounce('updateHex', function () {
+          this.cancelDebouncer('updateHSB');
+          this.cancelDebouncer('updateRGB');
+          this._updateHex(hex);
+          this.cancelDebouncer('updateHSB');
+          this.cancelDebouncer('updateRGB');
+          this._isLocked = false;
+        });
+      }
     },
 
     _onHSBChanged: function (hue, saturation, brightness) {
-      this.debounce('updateHSB', function () {
-        this._updateHSB(hue, saturation, brightness);
-        this.cancelDebouncer('updateHex');
-        this.cancelDebouncer('updateRGB');
-      }, 1);
+      if (!this._isLocked) {
+        this._isLocked = true;
+        this.debounce('updateHSB', function () {
+          this.cancelDebouncer('updateHex');
+          this.cancelDebouncer('updateRGB');
+          this._updateHSB(hue, saturation, brightness);
+          this.cancelDebouncer('updateHex');
+          this.cancelDebouncer('updateRGB');
+          this._isLocked = false;
+        });
+      }
     },
 
     _onRGBChanged: function (red, green, blue) {
-      this.debounce('updateRGB', function () {
-        this._updateRGB(red, green, blue);
-        this.cancelDebouncer('updateHex');
-        this.cancelDebouncer('updateHSB');
-      }, 1);
+      if (!this._isLocked) {
+        this._isLocked = true;
+        this.debounce('updateRGB', function () {
+          this.cancelDebouncer('updateHex');
+          this.cancelDebouncer('updateHSB');
+          this._updateRGB(red, green, blue);
+          this.cancelDebouncer('updateHex');
+          this.cancelDebouncer('updateHSB');
+          this._isLocked = false;
+        });
+      }
     },
 
     // set values
 
     _setHex: function (hex) {
-      if (hex !== this.hex) {
-        this.set('hex', hex);
-      }
+      this.set('hex', hex);
     },
 
     _setHSB: function (hsb) {
-      if (hsb.h !== this.hue ||
-          hsb.s !== this.saturation ||
-          hsb.v !== this.brightness) {
-        this.set('hue', hsb.h);
-        this.set('saturation', hsb.s);
-        this.set('brightness', hsb.v);
-      }
+      this.set('hue', hsb.h);
+      this.set('saturation', hsb.s);
+      this.set('brightness', hsb.v);
     },
 
     _setRGB: function (rgb) {
-      if (rgb.r !== this.red ||
-          rgb.g !== this.green ||
-          rgb.b !== this.blue) {
-        this.set('red', rgb.r);
-        this.set('green', rgb.g);
-        this.set('blue', rgb.b);
-      }
+      this.set('red', rgb.r);
+      this.set('green', rgb.g);
+      this.set('blue', rgb.b);
     },
 
-    // update other values
+    // update related values
 
     _updateHex: function (hex) {
       var rgb = this._convertHexToRGB(hex);
@@ -3665,16 +3687,20 @@
       return closest.color.title;
     },
 
-    _computeTitleStyle: function (hex) {
-      return 'color: ' + tinycolor.mostReadable(
-        hex, [ '#000', '#FFF' ], { includeFallbackColors: true, size: 'large' }
-      );
-    },
-
     _computeBackgroundStyle: function (red, green, blue, alpha) {
       return 'background: ' + tinycolor({
         r: red, g: green, b: blue, a: alpha
       }).toRgbString();
+    },
+
+    _computeTitle: function (hex, name, useHexAsTitle) {
+      return useHexAsTitle ? hex : name;
+    },
+
+    _computeTitleStyle: function (hex) {
+      return 'color: ' + tinycolor.mostReadable(
+        hex, [ '#000', '#FFF' ], { includeFallbackColors: true, size: 'large' }
+      );
     }
 
   };

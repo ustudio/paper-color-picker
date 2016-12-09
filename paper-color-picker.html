@@ -306,7 +306,7 @@ and to open the dialog
           <paper-button on-tap="_toggleAdvancedMode">
             [[ _computeModeButtonText(advanced, basicButtonText, advancedButtonText) ]]
           </paper-button>
-          <paper-button dialog-confirm>
+          <paper-button dialog-confirm on-tap="acceptChanges">
             [[ confirmationButtonText ]]
           </paper-button>
           <paper-button dialog-dismiss on-tap="resetState">
@@ -358,7 +358,7 @@ and to open the dialog
         },
 
         /**
-          * Color picker type: *hsb* or *hsl*.
+          * Color picker type: *hsb*, *hsv, or *hsl*.
           */
         type: {
           type: String,
@@ -442,6 +442,12 @@ and to open the dialog
         _initialState: Object
       },
 
+      observers: [
+        '_onRGBChanged(red, green, blue)',
+        '_onHexChanged(hex)',
+        '_onHSBChanged(hue, saturation, brightness)'
+      ],
+
       listeners: {
         'iron-overlay-opened': '_onOpened',
         'iron-overlay-canceled': 'resetState',
@@ -488,11 +494,16 @@ and to open the dialog
         });
       },
 
+      acceptChanges: function () {
+        this.fire('update-color', { hex: this.hex });
+      },
+
       _computeModeButtonText: function (advanced, basicButtonText, advancedButtonText) {
         return advanced ?  basicButtonText : advancedButtonText;
       },
 
       _onEnterPressed: function () {
+        this.acceptChanges();
         this.$.dialog.close();
       },
 
@@ -532,7 +543,7 @@ and to open the dialog
       },
 
       _showBrightnessSlider: function (shape, type) {
-        return type === 'hsb' && shape !== 'huebox';
+        return (type === 'hsb' || type === 'hsv') && shape !== 'huebox';
       },
 
       _showLuminositySlider: function (shape, type) {
@@ -554,6 +565,8 @@ and to open the dialog
       _recenterDialog: function () {
         if (this.$.dialog.opened) this.$.dialog.center();
       },
+
+      // computed values
 
       _computePercentage: function (value) {
         return Math.round(value * 100) + '%';
