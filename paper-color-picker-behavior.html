@@ -3506,42 +3506,32 @@
 
       if (!this._isLocked) {
         this._isLocked = true;
-        this.debounce('updateHex', function () {
-          this.cancelDebouncer('updateHSB');
-          this.cancelDebouncer('updateRGB');
-          this._updateHex(hex);
-          this.cancelDebouncer('updateHSB');
-          this.cancelDebouncer('updateRGB');
-          this._isLocked = false;
-        });
+        this._updateHex(hex);
+        this._isLocked = false;
       }
     },
 
     _onHSBChanged: function (hue, saturation, brightness) {
       if (!this._isLocked) {
         this._isLocked = true;
-        this.debounce('updateHSB', function () {
-          this.cancelDebouncer('updateHex');
-          this.cancelDebouncer('updateRGB');
-          this._updateHSB(hue, saturation, brightness);
-          this.cancelDebouncer('updateHex');
-          this.cancelDebouncer('updateRGB');
-          this._isLocked = false;
-        });
+        this._updateHSB(hue, saturation, brightness);
+        this._isLocked = false;
+      }
+    },
+
+    _onHSLChanged: function (hue, saturation, luminosity) {
+      if (!this._isLocked) {
+        this._isLocked = true;
+        this._updateHSL(hue, saturation, luminosity);
+        this._isLocked = false;
       }
     },
 
     _onRGBChanged: function (red, green, blue) {
       if (!this._isLocked) {
         this._isLocked = true;
-        this.debounce('updateRGB', function () {
-          this.cancelDebouncer('updateHex');
-          this.cancelDebouncer('updateHSB');
-          this._updateRGB(red, green, blue);
-          this.cancelDebouncer('updateHex');
-          this.cancelDebouncer('updateHSB');
-          this._isLocked = false;
-        });
+        this._updateRGB(red, green, blue);
+        this._isLocked = false;
       }
     },
 
@@ -3557,6 +3547,12 @@
       this.set('brightness', hsb.v);
     },
 
+    _setHSL: function (hsl) {
+      this.set('hue', hsl.h);
+      this.set('saturation', hsl.s);
+      this.set('luminosity', hsl.l);
+    },
+
     _setRGB: function (rgb) {
       this.set('red', rgb.r);
       this.set('green', rgb.g);
@@ -3568,44 +3564,58 @@
     _updateHex: function (hex) {
       var rgb = this._convertHexToRGB(hex);
       var hsb = this._convertHexToHSB(hex);
+      var hsl = this._convertHexToHSL(hex);
 
       this._setRGB(rgb);
       this._setHSB(hsb);
+      this._setHSL(hsl);
     },
 
     _updateHSB: function (hue, saturation, brightness) {
       var rgb = this._convertHSBtoRGB(hue, saturation, brightness);
       var hex = this._convertHSBtoHex(hue, saturation, brightness);
+      var hsl = this._convertHSBtoHSL(hue, saturation, brightness);
 
       this._setRGB(rgb);
       this._setHex(hex);
+      this._setHSL(hsl);
+    },
+
+    _updateHSL: function (hue, saturation, luminosity) {
+      var rgb = this._convertHSLtoRGB(hue, saturation, luminosity);
+      var hex = this._convertHSLtoHex(hue, saturation, luminosity);
+      var hsb = this._convertHSLtoHSB(hue, saturation, luminosity);
+
+      this._setRGB(rgb);
+      this._setHex(hex);
+      this._setHSB(hsb);
     },
 
     _updateRGB: function (red, green, blue) {
       var hex = this._convertRGBtoHex(red, green, blue);
       var hsb = this._convertRGBtoHSB(red, green, blue);
+      var hsl = this._convertRGBtoHSL(red, green, blue);
 
       this._setHex(hex);
       this._setHSB(hsb);
+      this._setHSL(hsl);
     },
 
     // hex conversions
-
-    _convertHexToRGB: function (hex) {
-      return tinycolor(hex).toRgb();
-    },
 
     _convertHexToHSB: function (hex) {
       return tinycolor(hex).toHsv();
     },
 
-    // HSB/HSV conversions
-
-    _convertHSBtoRGB: function (hue, saturation, brightness) {
-      return tinycolor({
-        h: hue, s: saturation, v: brightness
-      }).toRgb();
+    _convertHexToHSL: function (hex) {
+      return tinycolor(hex).toHsl();
     },
+
+    _convertHexToRGB: function (hex) {
+      return tinycolor(hex).toRgb();
+    },
+
+    // HSB/HSV conversions
 
     _convertHSBtoHex: function (hue, saturation, brightness) {
       return tinycolor({
@@ -3613,7 +3623,31 @@
       }).toHexString().toUpperCase();
     },
 
+    _convertHSBtoHSL: function (hue, saturation, brightness) {
+      return tinycolor({
+        h: hue, s: saturation, v: brightness
+      }).toHsl();
+    },
+
+    _convertHSBtoRGB: function (hue, saturation, brightness) {
+      return tinycolor({
+        h: hue, s: saturation, v: brightness
+      }).toRgb();
+    },
+
     // HSL conversions
+
+    _convertHSLtoHex: function (hue, saturation, luminosity) {
+      return tinycolor({
+        h: hue, s: saturation, l: luminosity
+      }).toHexString().toUpperCase();
+    },
+
+    _convertHSLtoHSB: function (hue, saturation, luminosity) {
+      return tinycolor({
+        h: hue, s: saturation, l: luminosity
+      }).toHsv();
+    },
 
     _convertHSLtoRGB: function (hue, saturation, luminosity) {
       return tinycolor({

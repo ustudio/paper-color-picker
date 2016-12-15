@@ -70,8 +70,7 @@
       },
 
       value: {
-        type: Number,
-        value: 0
+        type: Number
       }
     },
 
@@ -80,9 +79,10 @@
     },
 
     _onValueChanged: function (e, obj) {
-      if (obj.value > 255) {
+      value = parseInt(obj.value);
+      if (value > 255) {
         this.set('value', 255);
-      } else if (obj.value < 0) {
+      } else if (value < 0) {
         this.set('value', 0);
       }
     }

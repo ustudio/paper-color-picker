@@ -214,9 +214,9 @@ There are three different main configurations all 3 elements allow: `circle`, `s
         this.$.picker.open();
       },
 
-      updateColor: function (e, obj) {
-        this._setRGB(obj);
-        this._onRGBChanged(obj);
+      updateColor: function (e, detail) {
+        this._setRGB(detail);
+        this._onRGBChanged(detail.r, detail.g, detail.b);
       },
 
       // computed values

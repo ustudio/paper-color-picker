@@ -114,7 +114,11 @@
       ],
 
       listeners: {
-        'iron-resize': 'redraw'
+        'iron-resize': '_onResize'
+      },
+
+      _onResize: function (e, detail) {
+        this.redraw();
       },
 
       _pickColor: function (e) {
@@ -145,7 +149,7 @@
 
       _onDown: function (e) {
         this._pickColor(e);
-        this.set('_trackingColorChanges', true);
+        this._trackingColorChanges = true;
       },
 
       _onMove: function (e) {
@@ -153,12 +157,8 @@
       },
 
       _onUp: function (e) {
-        this.cancelDebouncer('updateRGB');
-        this.debounce('updateRGB', function () {
-          this.fire('rgb-changed', { r: this.red, g: this.green, b: this.blue });
-        }, 1);
+        this.fire('color-picked', { r: this.red, g: this.green, b: this.blue });
 
-        this.set('_trackingColorChanges', false);
         this.$.ripple.style.color = 'rgb(' +
           this.red + ', ' +
           this.green + ', ' +
@@ -168,12 +168,14 @@
         this.async(function () {
           this.$.ripple.upAction();
         })
+
+        this._trackingColorChanges = false;
       },
 
       /**
        * Force the circle to be redrawn.
        */
-      redraw: function () {
+      redraw: function (e, detail) {
         this.debounce('redraw', function () {
           var size = this.getBoundingClientRect();
           var width = size.width;
@@ -185,7 +187,7 @@
             height = parseInt(computedStyle.height);
           }
 
-          this.set('_size', Math.floor(Math.min(width, height)));
+          this._size = Math.floor(Math.min(width, height));
           this.$.canvas.width = this._size;
           this.$.canvas.height = this._size;
           this.$['ripple-container'].style.width = this._size + 'px';
