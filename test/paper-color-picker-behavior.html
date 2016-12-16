@@ -14,19 +14,19 @@
 </head>
 <body>
 
-  <test-fixture id="rgb-first">
+  <test-fixture id="defaults">
+    <template>
+      <x-behavior-test></x-behavior-test>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="rgb">
     <template>
       <x-behavior-test red="239" green="83" blue="35"></x-behavior-test>
     </template>
   </test-fixture>
 
-  <test-fixture id="hex-first-lowercase">
-    <template>
-      <x-behavior-test hex="#ef5323"></x-behavior-test>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="hex-first-uppercase">
+  <test-fixture id="hex">
     <template>
       <x-behavior-test hex="#EF5323"></x-behavior-test>
     </template>
@@ -35,15 +35,6 @@
   <script>
     suite('basic', function () {
 
-      function timePasses(ms) {
-        if (ms === undefined) ms = 1;
-        return new Promise(function (resolve) {
-          window.setTimeout(function () {
-            resolve();
-          }, ms);
-        });
-      }
-
       suiteSetup(function () {
         Polymer({
           is: 'x-behavior-test',
@@ -51,83 +42,111 @@
         });
       });
 
-      test('rgb value sets hex value', function (done) {
-        var element = fixture('rgb-first');
+      test('default values', function () {
+        var element = fixture('defaults');
 
-        flush(function () {
+        assert.isUndefined(element.red);
+        assert.isUndefined(element.green);
+        assert.isUndefined(element.blue);
+        assert.isUndefined(element.hex);
+        assert.isUndefined(element.hue);
+        assert.isUndefined(element.saturation);
+        assert.isUndefined(element.brightness);
+        assert.isUndefined(element.luminosity);
+        assert.equal(element.alpha, 1);
+      });
+
+      suite('RGB', function () {
+        var element;
+
+        suiteSetup(function () {
+          element = fixture('rgb');
+          element._onRGBChanged(element.red, element.green, element.blue);
+        });
+
+        test('values are initialized properly', function () {
           assert.equal(element.hex, '#EF5323');
-          assert.equal(element.name, 'Flame');
-          done();
-        });
-      });
-
-      test('hex value with lowercase letters sets rgb value', function (done) {
-        var element = fixture('hex-first-uppercase');
-
-        flush(function () {
           assert.equal(element.red, 239);
           assert.equal(element.green, 83);
           assert.equal(element.blue, 35);
-          assert.equal(element.name, 'Flame');
-          done();
+          assert.equal(element.hue, 14.117647058823529);
+          assert.equal(element.saturation, 0.864406779661017);
+          assert.equal(element.brightness, 0.9372549019607843);
+          assert.equal(element.luminosity, 0.5372549019607843);
         });
-      });
 
-      test('hex value with uppercase letters sets rgb value', function (done) {
-        var element = fixture('hex-first-uppercase');
-
-        flush(function () {
-          assert.equal(element.red, 239);
-          assert.equal(element.green, 83);
-          assert.equal(element.blue, 35);
+        test('computed values are correct', function () {
           assert.equal(element.name, 'Flame');
-          done();
+          assert.equal(element.backgroundStyle, 'background: rgb(239, 83, 35)');
         });
-      });
 
-      test('other values update when red value changes', function (done) {
-        var element = fixture('rgb-first');
-
-        element.red = '128';
-        flush(function () {
+        test('other values update when red value changes', function () {
+          element._onRGBChanged(128, element.green, element.blue);
           assert.equal(element.hex, '#805323');
-          assert.equal(element.name, 'Russet');
-          done();
-        });
-      });
-
-      test('other values update when green value changes', function (done) {
-        var element = fixture('rgb-first');
-
-        element.green = '255';
-        flush(function () {
-          assert.equal(element.hex, '#EFFF23');
-          assert.equal(element.name, 'Laser Lemon');
-          done();
-        });
-      });
-
-      test('other values update when blue value changes', function (done) {
-        var element = fixture('rgb-first');
-
-        element.blue = '10';
-        flush(function () {
-          assert.equal(element.hex, '#EF530A');
-          assert.equal(element.name, 'Persimmon');
-          done();
-        });
-      });
-
-      test('other values update when hex value changes', function (done) {
-        var element = fixture('rgb-first');
-
-        element.hex = '#805323';
-        flush(function () {
-          assert.equal(element.red, 0x80);
           assert.equal(element.green, 0x53);
           assert.equal(element.blue, 0x23);
-          assert.equal(element.name, 'Russet');
-          done();
+          assert.equal(element.hue, 30.96774193548387);
+          assert.equal(element.saturation, 0.5705521472392638);
+          assert.equal(element.brightness, 0.5019607843137255);
+          assert.equal(element.luminosity, 0.3196078431372549);
+        });
+
+        test('other values update when green value changes', function () {
+          element._onRGBChanged(element.red, 255, element.blue);
+          assert.equal(element.hex, '#EFFF23');
+          assert.equal(element.red, 0xEF);
+          assert.equal(element.blue, 0x23);
+          assert.equal(element.hue, 64.36363636363637);
+          assert.equal(element.saturation, 1);
+          assert.equal(element.brightness, 1);
+          assert.equal(element.luminosity, 0.5686274509803921);
+        });
+
+        test('other values update when blue value changes', function () {
+          element._onRGBChanged(element.red, element.green, 80);
+          assert.equal(element.hex, '#EF5350');
+          assert.equal(element.red, 0xEF);
+          assert.equal(element.green, 0x53);
+          assert.equal(element.hue, 1.1320754716981147);
+          assert.equal(element.saturation, 0.8324607329842932);
+          assert.equal(element.brightness, 0.9372549019607843);
+          assert.equal(element.luminosity, 0.6254901960784314);
+        });
+      });
+
+      suite('hex', function () {
+        var element;
+
+        suiteSetup(function () {
+          element = fixture('hex');
+          element._onHexChanged(element.hex);
+        });
+
+        test('values are initialized properly', function () {
+          assert.equal(element.hex, '#EF5323');
+          assert.equal(element.red, 239);
+          assert.equal(element.green, 83);
+          assert.equal(element.blue, 35);
+          assert.equal(element.hue, 14.117647058823529);
+          assert.equal(element.saturation, 0.864406779661017);
+          assert.equal(element.brightness, 0.9372549019607843);
+          assert.equal(element.luminosity, 0.5372549019607843);
+        });
+
+        test('computed values are correct', function () {
+          assert.equal(element.title, 'Flame');
+          assert.equal(element.titleStyle, 'color: #000000');
+        });
+
+        test('other values update when hex value changes', function () {
+          element._onHexChanged('#00FF00');
+          assert.equal(element.red, 0x00);
+          assert.equal(element.green, 0xFF);
+          assert.equal(element.blue, 0x00);
+          assert.equal(element.hue, 120);
+          assert.equal(element.saturation, 1);
+          assert.equal(element.brightness, 1);
+          assert.equal(element.luminosity, 0.5);
         });
       });
 

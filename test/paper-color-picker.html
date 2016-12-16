@@ -15,12 +15,12 @@
 </head>
 <body>
 
-  <test-fixture id="rgb-picker">
+  <test-fixture id="picker">
     <template>
       <paper-color-picker
-        red="239"
-        green="83"
-        blue="35"
+        entry-animation="transform-automation"
+        exit-animation="transform-automation"
+        hex="#EF5323"
       ></paper-color-picker>
     </template>
   </test-fixture>
@@ -33,92 +33,38 @@
     }
 
     suite('state management', function () {
+      this.timeout(2500);
 
-      test('cancel button resets state', function (done) {
-        var element = fixture('rgb-picker');
+      var element;
+      var cancelSpy;
+      var acceptSpy;
+      var resetSpy;
 
-        assert.equal(element._initialState.red, 239);
-        assert.equal(element._initialState.green, 83);
-        assert.equal(element._initialState.blue, 35);
+      setup(function () {
+        element = fixture('picker');
+        cancelSpy = sinon.spy();
+        acceptSpy = sinon.spy(element, 'acceptChanges');
+        resetSpy = sinon.spy(element, 'resetState');
+        element.addEventListener('iron-overlay-canceled', cancelSpy);
+      });
 
+      test('canceling changes resets state', function (done) {
         runAfterOpen(element, function () {
-          element.hex = '#00FF00';
-
-          element.addEventListener('iron-overlay-closed', function (event) {
-            assert.equal(element.red, 239);
-            assert.equal(element.green, 83);
-            assert.equal(element.blue, 35);
-            done();
-          });
-
           MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-dismiss]'));
+          assert(cancelSpy.called, 'cancel event did not fire');
+          assert(resetSpy.called, 'resetState was not called');
+          assert(acceptSpy.notCalled, 'changes were applied');
+          done();
         });
       });
 
-      test('escape key resets state', function (done) {
-        var element = fixture('rgb-picker');
-
-        assert.equal(element._initialState.red, 239);
-        assert.equal(element._initialState.green, 83);
-        assert.equal(element._initialState.blue, 35);
-
+      test('accepting changes preserves state', function (done) {
         runAfterOpen(element, function () {
-          element.hex = '#00FF00';
-
-          element.addEventListener('iron-overlay-closed', function (event) {
-            assert.equal(element.hex, '#EF5323');
-            assert.equal(element.red, 239);
-            assert.equal(element.green, 83);
-            assert.equal(element.blue, 35);
-            done();
-          });
-
-          MockInteractions.pressAndReleaseKeyOn(element, undefined, [], 'Escape');
-        });
-      });
-
-      test('OK button preserves state', function (done) {
-        var element = fixture('rgb-picker');
-
-        assert.equal(element._initialState.red, 239);
-        assert.equal(element._initialState.green, 83);
-        assert.equal(element._initialState.blue, 35);
-
-        runAfterOpen(element, function () {
-          element.hex = '#00FF00';
-
-          element.addEventListener('iron-overlay-closed', function (event) {
-            assert.equal(element.hex, '#00FF00');
-            assert.equal(element.red, 0);
-            assert.equal(element.green, 255);
-            assert.equal(element.blue, 0);
-            done();
-          });
-
           MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
-        });
-      });
-
-      test('enter key preserves state', function (done) {
-        var element = fixture('rgb-picker');
-        var confirmButton = Polymer.dom(element.root).querySelector('[dialog-confirm]');
-
-        assert.equal(element._initialState.red, 239);
-        assert.equal(element._initialState.green, 83);
-        assert.equal(element._initialState.blue, 35);
-
-        runAfterOpen(element, function () {
-          element.hex = '#00FF00';
-
-          element.addEventListener('iron-overlay-closed', function (event) {
-            assert.equal(element.hex, '#00FF00');
-            assert.equal(element.red, 0);
-            assert.equal(element.green, 255);
-            assert.equal(element.blue, 0);
-            done();
-          });
-
-          MockInteractions.pressAndReleaseKeyOn(confirmButton, undefined, [], 'enter');
+          assert(cancelSpy.notCalled, 'cancel event fired');
+          assert(resetSpy.notCalled, 'resetState was called');
+          assert(acceptSpy.called, 'changes were not applied');
+          done();
         });
       });
 

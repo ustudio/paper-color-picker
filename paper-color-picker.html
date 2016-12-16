@@ -200,8 +200,8 @@ and to open the dialog
   <template>
 
     <paper-dialog id="dialog"
-      entry-animation="scale-up-animation"
-      exit-animation="fade-out-animation"
+      entry-animation="[[ entryAnimation ]]"
+      exit-animation="[[ exitAnimation ]]"
       class="color-picker-dialog"
       with-backdrop="[[ withBackdrop ]]">
 
@@ -341,6 +341,22 @@ and to open the dialog
         showAlpha: {
           type: Boolean,
           value: false
+        },
+
+        /**
+          * Animation to use when opening the color picker.
+          */
+        entryAnimation: {
+          type: String,
+          value: 'scale-up-animation'
+        },
+
+        /**
+          * Animation to use when closing the color picker.
+          */
+        exitAnimation: {
+          type: String,
+          value: 'fade-out-animation'
         },
 
         /**
@@ -485,16 +501,17 @@ and to open the dialog
         this._drawHuePicker();
       },
 
-      _onCanceled: function (e) {
+      _onCanceled: function () {
         this.resetState();
       },
 
-      _onColorPicked: function (e, obj) {
-        this._setRGB(obj);
+      _onColorPicked: function (e, rgb) {
+        this._setRGB(rgb);
       },
 
       cancelChanges: function (e) {
         this.$.dialog.cancel(e);
+        this._onCanceled();
       },
 
       /**
@@ -578,6 +595,13 @@ and to open the dialog
       open: function () {
         this.saveState();
         this.$.dialog.open();
+      },
+
+      /**
+       * Close the color picker dialog.
+       */
+      close: function () {
+        this.$.dialog.close();
       },
 
       _showBrightnessSlider: function (shape, type) {

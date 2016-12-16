@@ -194,7 +194,11 @@
           this.$['ripple-container'].style.height = this._size + 'px';
 
           var halfsize = this._size / 2;
-          var bitmap = this._ctx.getImageData(0, 0, this._size, this._size);
+          try {
+            var bitmap = this._ctx.getImageData(0, 0, this._size, this._size);
+          } catch (_) {
+            return;
+          }
 
           for (var y = 0; y < this._size; y++) {
             for (var x = 0; x < this._size; x++) {
