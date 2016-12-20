@@ -3,6 +3,8 @@ machine:
     version: 6.1.0
 
 dependencies:
+  cache_directories:
+    - bower_components
   pre:
     - npm install -g bower polymer-cli
     - bower install
@@ -11,7 +13,7 @@ dependencies:
 
 test:
   override:
-    - polymer test --expanded
+    - polymer test --expanded -l all
 
 experimental:
   notify:
