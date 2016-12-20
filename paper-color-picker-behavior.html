@@ -3399,23 +3399,17 @@
       /**
         * The red component of the current RGB value.
         */
-      red: {
-        type: Number
-      },
+      red: Number,
 
       /**
         * The green component of the current RGB value.
         */
-      green: {
-        type: Number
-      },
+      green: Number,
 
       /**
         * The blue component of the current RGB value.
         */
-      blue: {
-        type: Number
-      },
+      blue: Number,
 
       /**
        * The alpha value, from 0 to 1.
@@ -3459,10 +3453,9 @@
       },
 
       /**
-        * If true, use the hex color code as the title,
-        * and use the color name as the description. If false,
-        * use the color name as the title, and the hex color
-        * code as the description.
+        * When this property is true, the title is the hex value
+        * and the color name becomes the description, and vice versa
+        * if the property is false.
         */
       useHexAsTitle: {
         type: Boolean,
@@ -3472,37 +3465,27 @@
       /**
        * The hex value of the current color.
        */
-      hex: {
-        type: String
-      },
+      hex: String,
 
       /**
        * The hue value, from 0 to 359.
        */
-      hue: {
-        type: Number
-      },
+      hue: Number,
 
       /**
        * The luminosity (or lightness) value, from 0 to 1.
        */
-      luminosity: {
-        type: Number
-      },
+      luminosity: Number,
 
       /**
        * The saturation value, from 0 to 1.
        */
-      saturation: {
-        type: Number
-      },
+      saturation: Number,
 
       /**
        * The brightness (or "value") value, from 0 to 1.
        */
-      brightness: {
-        type: Number
-      },
+      brightness: Number,
 
       _isLocked: {
         type: Boolean,
@@ -3690,7 +3673,9 @@
 
     _computeName: function (red, green, blue) {
       var closest = {
-        color: null,
+        color: {
+          title: ''
+        },
         distance: Infinity
       };
 

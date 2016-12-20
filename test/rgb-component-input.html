@@ -16,6 +16,12 @@
 </head>
 <body>
 
+  <test-fixture id="default">
+    <template>
+      <rgb-component-input></rgb-component-input>
+    </template>
+  </test-fixture>
+
   <test-fixture id="basic">
     <template>
       <rgb-component-input color="Red" value="128"></rgb-component-input>
@@ -35,66 +41,63 @@
   </test-fixture>
 
   <script>
-    suite('basic', function () {
+    describe('basic functionality', function () {
 
-      test('value may be set', function () {
-        var input = fixture('basic');
-        assert.equal(input.value, 128);
+      it('should default to no value', function () {
+        var element = fixture('default');
+        expect(element.value).to.be.empty;
       });
 
-      test('setting value sets the input value', function () {
-        var input = fixture('basic');
-        input.value = 64;
-        assert.equal(
-          input.inputElement.value,
-          input.value,
-          'inputElement.value equals input.value'
-        );
+      it('should allow you to set the value', function () {
+        var element = fixture('basic');
+        expect(element.value).to.equal('128');
       });
 
-      test('error message is displayed', function () {
-        var input = fixture('error');
-        forceXIfStamp(input);
-        var error = Polymer.dom(input.root).querySelector('paper-input-error');
-        assert.ok(error, 'paper-input-error exists');
-        assert.notEqual(
-          getComputedStyle(error).display,
-          'none',
-          'error is not display:none'
-        );
+      it('should allow you to assign a value', function () {
+        var element = fixture('basic');
+        element.value = 64;
+        expect(element.value).to.equal(parseInt(element.inputElement.value));
       });
 
-      test('color name may be set', function () {
-        var input = fixture('basic');
-        assert.equal(input.color, 'Red');
+      it('should display an error message when appropriate', function () {
+        var element = fixture('error');
+        forceXIfStamp(element);
+        var error = Polymer.dom(element.root).querySelector('paper-input-error');
+        expect(error).to.not.be.empty;
+        expect(getComputedStyle(error).display).to.not.equal('none');
+      });
+
+      it('should allow you to set the color name', function () {
+        var element = fixture('basic');
+        expect(element.color).to.equal('Red');
       });
 
     });
 
-    suite('validation', function () {
+    describe('validation', function () {
 
-      test('validator is used', function () {
-        var input = fixture('validator');
-        assert.isTrue(input.inputElement.invalid, 'input is invalid');
+      it('should use the validator', function () {
+        var element = fixture('validator');
+        expect(element.inputElement.invalid).to.be.true;
       });
 
-      test('invalid attribute set if invalid', function() {
-        var input = fixture('validator');
-        assert.isTrue(input.invalid, 'invalid is true');
+      it('should set the invalid attribute if invalid', function() {
+        var element = fixture('validator');
+        expect(element.invalid).to.be.true;
       });
 
-      test('invalid attribute not set if not invalid', function() {
-        var input = fixture('basic');
-        assert.isFalse(input.invalid, 'invalid is false');
+      it('should not set the invalid attribute if valid', function() {
+        var element = fixture('basic');
+        expect(element.invalid).to.be.false;
       });
 
-      test('invalid attribute changes with value', function() {
-        var input = fixture('basic');
-        assert.isFalse(input.invalid, 'invalid is false');
-        input.value = 'foobar';
-        assert.isTrue(input.invalid, 'invalid is true');
-        input.value = 123;
-        assert.isFalse(input.invalid, 'invalid is false');
+      it('should change the invalid attribute on value changes', function() {
+        var element = fixture('basic');
+        expect(element.invalid).to.be.false;
+        element.value = 'foobar';
+        expect(element.invalid).to.be.true;
+        element.value = 123;
+        expect(element.invalid).to.be.false;
       });
 
     });

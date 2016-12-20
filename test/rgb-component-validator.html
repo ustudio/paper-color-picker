@@ -9,8 +9,8 @@
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
 
-  <link rel="import" href="rgb-component-validatable.html">
   <link rel="import" href="../rgb-component-validator.html">
+  <link rel="import" href="fixtures/rgb-component-validatable.html">
 </head>
 <body>
 
@@ -22,26 +22,26 @@
   </test-fixture>
 
   <script>
-    suite('basic', function () {
-      test('validator validates', function () {
+    describe('basic functionality', function () {
+      it('should validate values', function () {
         var node = fixture('rgb-component-validator');
         var input = node[1];
 
         input.validator = 'rgb-component-validator';
 
-        assert.isTrue(input.validate(0));
-        assert.isTrue(input.validate('0'));
-        assert.isTrue(input.validate(1));
-        assert.isTrue(input.validate(2));
-        assert.isTrue(input.validate(30));
-        assert.isTrue(input.validate(123));
-        assert.isTrue(input.validate(255));
-        assert.isTrue(input.validate('255'));
+        expect(input.validate(0)).to.be.true;
+        expect(input.validate('0')).to.be.true;
+        expect(input.validate(1)).to.be.true;
+        expect(input.validate(2)).to.be.true;
+        expect(input.validate(30)).to.be.true;
+        expect(input.validate(123)).to.be.true;
+        expect(input.validate(255)).to.be.true;
+        expect(input.validate('255')).to.be.true;
 
-        assert.isFalse(input.validate(-1));
-        assert.isFalse(input.validate(256));
-        assert.isFalse(input.validate(300));
-        assert.isFalse(input.validate(2550));
+        expect(input.validate(-1)).to.be.false;
+        expect(input.validate(256)).to.be.false;
+        expect(input.validate(300)).to.be.false;
+        expect(input.validate(2550)).to.be.false;
       });
     });
   </script>

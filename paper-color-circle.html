@@ -83,7 +83,7 @@
         },
 
         /**
-          * Type: *hsb*, *hsv*, or *hsl*
+          * Type: *hsb*, *hsv* (equivalent to *hsb*), or *hsl*
           */
         type: {
           type: String,
@@ -97,9 +97,7 @@
           }
         },
 
-        _size: {
-          type: Number
-        },
+        _size: Number,
 
         _trackingColorChanges: {
           type: Boolean,
@@ -114,11 +112,7 @@
       ],
 
       listeners: {
-        'iron-resize': '_onResize'
-      },
-
-      _onResize: function (e, detail) {
-        this.redraw();
+        'iron-resize': 'redraw'
       },
 
       _pickColor: function (e) {
@@ -135,7 +129,9 @@
             ) - this._size / 2
           );
 
-          if (distance < this._size / 100) return;
+          if (distance < this._size / 100) {
+            return;
+          }
         }
 
         if (color[3] === 255) {
@@ -175,7 +171,7 @@
       /**
        * Force the circle to be redrawn.
        */
-      redraw: function (e, detail) {
+      redraw: function () {
         this.debounce('redraw', function () {
           var size = this.getBoundingClientRect();
           var width = size.width;
@@ -218,27 +214,32 @@
                   if (this.type === 'hsb' || this.type === 'hsv') {
                     var value = Math.round(this.brightness * 1000) / 1000;
                     color = this._convertHSBtoRGB(hue, saturation, value);
-                  } else if (this.type === 'hsl') {
+                  }
+                  else if (this.type === 'hsl') {
                     var luminosity = Math.round(this.luminosity * 1000) / 1000;
                     color = this._convertHSLtoRGB(hue, saturation, luminosity);
                   }
                 };
-              } else if (this.shape === 'huebox') {
+              }
+              else if (this.shape === 'huebox') {
                 var hue = Math.round(this.hue * 1000) / 1000 * 360;
                 var saturation = x / width;
                 var third = 1 - y / this._size;
                 if (this.type === 'hsb' || this.type === 'hsv') {
                   color = this._convertHSBtoRGB(hue, saturation, third);
-                } else if (this.type === 'hsl') {
+                }
+                else if (this.type === 'hsl') {
                   color = this._convertHSLtoRGB(hue, saturation, third);
                 }
-              } else if (this.shape === 'square') {
+              }
+              else if (this.shape === 'square') {
                 var hue = x / width * 360;
                 var saturation = 1 - y / this._size;
                 if (this.type === 'hsb' || this.type === 'hsv') {
                   var brightness = Math.round(this.brightness * 1000) / 1000;
                   color = this._convertHSBtoRGB(hue, saturation, brightness);
-                } else if (this.type === 'hsl') {
+                }
+                else if (this.type === 'hsl') {
                   var luminosity = Math.round(this.luminosity * 1000) / 1000;
                   color = this._convertHSLtoRGB(hue, saturation, luminosity);
                 }
@@ -266,7 +267,8 @@
                     this.red + ',' +
                     this.green + ',' +
                     this.blue + ')');
-        } else {
+        }
+        else {
           this.set('_ctx.strokeStyle', 'rgba(255, 255, 255, 0.99)');
         }
         this.set('_ctx.lineWidth', this._size / 85);
@@ -281,11 +283,11 @@
         this._ctx.stroke();
       },
 
-      _brightnessChanged: function (brightness) {
+      _brightnessChanged: function () {
         this.redraw();
       },
 
-      _luminosityChanged: function (luminosity) {
+      _luminosityChanged: function () {
         this.redraw();
       },
 
@@ -296,7 +298,8 @@
             this.set('hue', hsl.h);
             this.set('saturation', hsl.s);
             this.set('luminosity', hsl.l);
-          } else if (this.type === 'hsb' || this.type === 'hsv') {
+          }
+          else if (this.type === 'hsb' || this.type === 'hsv') {
             var hsb = this._convertRGBtoHSB(red, green, blue);
             this.set('hue', hsb.h);
             this.set('saturation', hsb.s);

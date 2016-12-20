@@ -80,11 +80,14 @@
 
     _onValueChanged: function (e, obj) {
       value = parseInt(obj.value);
+
       if (value > 255) {
-        this.set('value', 255);
+        value = 255;
       } else if (value < 0) {
-        this.set('value', 0);
+        value = 0;
       }
+
+      this.set('value', value);
     }
 
   });

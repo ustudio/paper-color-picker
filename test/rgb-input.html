@@ -47,35 +47,35 @@
   </test-fixture>
 
   <script>
-    suite('basic', function () {
+    describe('basic functionality', function () {
 
-      test('values default to 0', function () {
-        var input = fixture('basic');
-        assert.equal(input.red, 0);
-        assert.equal(input.green, 0);
-        assert.equal(input.blue, 0);
+      it('should default to no value for all components', function () {
+        var element = fixture('basic');
+        expect(element.red).to.be.empty;
+        expect(element.green).to.be.empty;
+        expect(element.blue).to.be.empty;
       });
 
-      test('setting red value works', function () {
-        var input = fixture('red');
-        assert.equal(input.red, 128);
+      it('should allow you to set the red value', function () {
+        var element = fixture('red');
+        expect(element.red).to.equal(128);
       });
 
-      test('setting green value works', function () {
-        var input = fixture('green');
-        assert.equal(input.green, 64);
+      it('should allow you to set the green value', function () {
+        var element = fixture('green');
+        expect(element.green).to.equal(64);
       });
 
-      test('setting blue value works', function () {
-        var input = fixture('blue');
-        assert.equal(input.blue, 32);
+      it('should allow you to set the blue value', function () {
+        var element = fixture('blue');
+        expect(element.blue).to.equal(32);
       });
 
-      test('all values can be set', function () {
-        var input = fixture('rgb');
-        assert.equal(input.red, 200);
-        assert.equal(input.green, 150);
-        assert.equal(input.blue, 100);
+      it('should allow you to set all values', function () {
+        var element = fixture('rgb');
+        expect(element.red).to.equal(200);
+        expect(element.green).to.equal(150);
+        expect(element.blue).to.equal(100);
       });
 
     });

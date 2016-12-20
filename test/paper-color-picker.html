@@ -27,20 +27,19 @@
 
   <script>
 
-    function runAfterOpen (dialog, callback) {
-      dialog.addEventListener('iron-overlay-opened', callback);
-      dialog.open();
-    }
+    describe('state management', function () {
 
-    suite('state management', function () {
-      this.timeout(2500);
+      function runAfterOpen (dialog, callback) {
+        dialog.addEventListener('iron-overlay-opened', callback);
+        dialog.open();
+      }
 
       var element;
       var cancelSpy;
       var acceptSpy;
       var resetSpy;
 
-      setup(function () {
+      beforeEach(function () {
         element = fixture('picker');
         cancelSpy = sinon.spy();
         acceptSpy = sinon.spy(element, 'acceptChanges');
@@ -48,22 +47,26 @@
         element.addEventListener('iron-overlay-canceled', cancelSpy);
       });
 
-      test('canceling changes resets state', function (done) {
+      it('should reset state when changes are canceled', function (done) {
         runAfterOpen(element, function () {
-          MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-dismiss]'));
-          assert(cancelSpy.called, 'cancel event did not fire');
-          assert(resetSpy.called, 'resetState was not called');
-          assert(acceptSpy.notCalled, 'changes were applied');
+          MockInteractions.tap(
+            Polymer.dom(element.root).querySelector('[dialog-dismiss]')
+          );
+          expect(cancelSpy).to.have.been.called;
+          expect(resetSpy).to.have.been.called;
+          expect(acceptSpy).to.not.have.been.called;
           done();
         });
       });
 
-      test('accepting changes preserves state', function (done) {
+      it('should preserve state when changes are accepted', function (done) {
         runAfterOpen(element, function () {
-          MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
-          assert(cancelSpy.notCalled, 'cancel event fired');
-          assert(resetSpy.notCalled, 'resetState was called');
-          assert(acceptSpy.called, 'changes were not applied');
+          MockInteractions.tap(
+            Polymer.dom(element.root).querySelector('[dialog-confirm]')
+          );
+          expect(cancelSpy).to.not.have.been.called;
+          expect(resetSpy).to.not.have.been.called;
+          expect(acceptSpy).to.have.been.called;
           done();
         });
       });

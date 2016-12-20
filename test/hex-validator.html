@@ -9,8 +9,8 @@
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
 
-  <link rel="import" href="hex-validatable.html">
   <link rel="import" href="../hex-validator.html">
+  <link rel="import" href="fixtures/hex-validatable.html">
 </head>
 <body>
 
@@ -22,25 +22,25 @@
   </test-fixture>
 
   <script>
-    suite('basic', function () {
-      test('validator validates', function () {
+    describe('basic functionality', function () {
+      it('should validate values', function () {
         var node = fixture('hex-validator');
         var input = node[1];
 
         input.validator = 'hex-validator';
 
-        assert.isTrue(input.validate('000000'));
-        assert.isTrue(input.validate('#000000'));
-        assert.isTrue(input.validate('Fe0ab8'));
-        assert.isTrue(input.validate('#Fe0ab8'));
+        expect(input.validate('000000')).to.be.true;
+        expect(input.validate('#000000')).to.be.true;
+        expect(input.validate('Fe0ab8')).to.be.true;
+        expect(input.validate('#Fe0ab8')).to.be.true;
 
-        assert.isFalse(input.validate(''));
-        assert.isFalse(input.validate('#00000'));
-        assert.isFalse(input.validate('0000'));
-        assert.isFalse(input.validate('00000'));
-        assert.isFalse(input.validate('H00000'));
-        assert.isFalse(input.validate('#Fe0ab82'));
-        assert.isFalse(input.validate('glorp!'));
+        expect(input.validate('')).to.be.false;
+        expect(input.validate('#00000')).to.be.false;
+        expect(input.validate('0000')).to.be.false;
+        expect(input.validate('00000')).to.be.false;
+        expect(input.validate('H00000')).to.be.false;
+        expect(input.validate('#Fe0ab82')).to.be.false;
+        expect(input.validate('glorp!')).to.be.false;
       });
     });
   </script>

@@ -4,7 +4,7 @@
   "authors": [
     "David Mulder",
     "Dennis Kugelmann",
-    "Kelly Fox"
+    "uStudio, Inc."
   ],
   "description": "A paper color picker inspired by Material Design",
   "main": "paper-color-picker.html",

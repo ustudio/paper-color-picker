@@ -477,17 +477,20 @@ and to open the dialog
       attached: function () {
         if (this.hex !== undefined) {
           this._onHexChanged(this.hex);
-        } else if (this.red !== undefined &&
-                   this.green !== undefined &&
-                   this.blue !== undefined) {
+        }
+        else if (this.red !== undefined &&
+                 this.green !== undefined &&
+                 this.blue !== undefined) {
           this._onRGBChanged(this.red, this.green, this.blue);
-        } else if (this.hue !== undefined &&
-                   this.saturation !== undefined &&
-                   this.brightness !== undefined) {
+        }
+        else if (this.hue !== undefined &&
+                 this.saturation !== undefined &&
+                 this.brightness !== undefined) {
           this._onHSBChanged(this.hue, this.saturation, this.brightness);
-        } else if (this.hue !== undefined &&
-                   this.saturation !== undefined &&
-                   this.luminosity !== undefined) {
+        }
+        else if (this.hue !== undefined &&
+                 this.saturation !== undefined &&
+                 this.luminosity !== undefined) {
           this._onHSLChanged(this.hue, this.saturation, this.luminosity);
         }
         this.saveState();
@@ -541,7 +544,8 @@ and to open the dialog
           var value = self._initialState[key];
           if (value !== undefined) {
             self.set(key, self._initialState[key]);
-          } else {
+          }
+          else {
             delete self[key];
           }
         });
@@ -550,7 +554,6 @@ and to open the dialog
       acceptChanges: function () {
         var rgb = { r: this.red, g: this.green, b: this.blue };
         this.fire('color-picked', rgb);
-        this.fire('update-color', rgb);
       },
 
       _computeModeButtonText: function (advanced, basicButtonText, advancedButtonText) {
