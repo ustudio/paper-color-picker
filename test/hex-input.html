@@ -61,8 +61,8 @@
 
       it('should allow you to assign a value', function () {
         var element = fixture('basic');
-        element.value = 'foobar';
-        expect(element.value).to.equal(element.inputElement.value);
+        element.value = '6480ed';
+        expect(element.inputElement.value).to.equal('#6480ED');
       });
 
       it('should display an error message when appropriate', function () {
@@ -112,7 +112,7 @@
         expect(element.invalid).to.be.false;
       });
 
-      it('should change the invalid attribute on value changes', function() {
+      it('should update the invalid attribute on value changes', function() {
         var element = fixture('value');
         expect(element.invalid).to.be.false;
         element.value = 'foobar';

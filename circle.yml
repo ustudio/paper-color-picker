@@ -6,14 +6,14 @@ dependencies:
   cache_directories:
     - bower_components
   pre:
-    - npm install -g bower polymer-cli
+    - npm install -g bower web-component-tester
     - bower install
   post:
     - bower ls
 
 test:
   override:
-    - polymer test --expanded -l all
+    - wct --expanded -l all
 
 experimental:
   notify:
