@@ -1,0 +1,112 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="rgb-component-input.html">
+
+<dom-module id="rgb-input">
+  <template>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      .container {
+        @apply(--layout-horizontal);
+        @apply(--layout-around-justified);
+      }
+
+      rgb-component-input {
+        margin: 0 5px;
+      }
+
+      rgb-component-input:first-child {
+        margin-left: 0;
+      }
+
+      rgb-component-input:last-child {
+        margin-right: 0;
+      }
+    </style>
+
+    <div class="container">
+      <rgb-component-input
+        color="Red"
+        value="{{ red }}"
+        class="paper-input-input"
+        invalid="{{ _redInvalid }}">
+      </rgb-component-input>
+
+      <rgb-component-input
+        color="Green"
+        value="{{ green }}"
+        class="paper-input-input"
+        invalid="{{ _greenInvalid }}">
+      </rgb-component-input>
+
+      <rgb-component-input
+        color="Blue"
+        value="{{ blue }}"
+        class="paper-input-input"
+        invalid="{{ _blueInvalid }}">
+      </rgb-component-input>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'rgb-input',
+
+    properties: {
+      /**
+       * The red component of the RGB color.
+       */
+      red: {
+        type: Number,
+        notify: true
+      },
+
+      /**
+       * The green component of the RGB color.
+       */
+      green: {
+        type: Number,
+        notify: true
+      },
+
+      /**
+       * The blue component of the RGB color.
+       */
+      blue: {
+        type: Number,
+        notify: true
+      },
+
+      _redInvalid: Boolean,
+
+      _greenInvalid: Boolean,
+
+      _blueInvalid: Boolean,
+
+      /**
+       * If true, one or more of the 3 component colors are invalid.
+       */
+      invalid: {
+        type: Boolean,
+        notify: true,
+        computed: '_computeInvalid(_redInvalid, _greenInvalid, _blueInvalid)'
+      }
+    },
+
+    _computeInvalid: function (_redInvalid, _greenInvalid, _blueInvalid) {
+      return _redInvalid || _greenInvalid || _blueInvalid;
+    }
+
+  });
+</script>

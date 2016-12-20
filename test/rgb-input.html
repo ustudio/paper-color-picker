@@ -1,0 +1,85 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>rgb-input test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../rgb-input.html">
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <rgb-input></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="red">
+    <template>
+      <rgb-input red="128"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="green">
+    <template>
+      <rgb-input green="64"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="blue">
+    <template>
+      <rgb-input blue="32"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="rgb">
+    <template>
+      <rgb-input red="200" green="150" blue="100"></rgb-input>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('basic functionality', function () {
+
+      it('should default to no value for all components', function () {
+        var element = fixture('basic');
+        expect(element.red).to.be.empty;
+        expect(element.green).to.be.empty;
+        expect(element.blue).to.be.empty;
+      });
+
+      it('should allow you to set the red value', function () {
+        var element = fixture('red');
+        expect(element.red).to.equal(128);
+      });
+
+      it('should allow you to set the green value', function () {
+        var element = fixture('green');
+        expect(element.green).to.equal(64);
+      });
+
+      it('should allow you to set the blue value', function () {
+        var element = fixture('blue');
+        expect(element.blue).to.equal(32);
+      });
+
+      it('should allow you to set all values', function () {
+        var element = fixture('rgb');
+        expect(element.red).to.equal(200);
+        expect(element.green).to.equal(150);
+        expect(element.blue).to.equal(100);
+      });
+
+    });
+  </script>
+
+</body>
+</html>

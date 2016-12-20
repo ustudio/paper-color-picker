@@ -1,0 +1,50 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>rgb-component-validator test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../rgb-component-validator.html">
+  <link rel="import" href="fixtures/rgb-component-validatable.html">
+</head>
+<body>
+
+  <test-fixture id="rgb-component-validator">
+    <template>
+      <rgb-component-validator></rgb-component-validator>
+      <rgb-component-validatable></rgb-component-validatable>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('basic functionality', function () {
+      it('should validate values', function () {
+        var node = fixture('rgb-component-validator');
+        var input = node[1];
+
+        input.validator = 'rgb-component-validator';
+
+        expect(input.validate(0)).to.be.true;
+        expect(input.validate('0')).to.be.true;
+        expect(input.validate(1)).to.be.true;
+        expect(input.validate(2)).to.be.true;
+        expect(input.validate(30)).to.be.true;
+        expect(input.validate(123)).to.be.true;
+        expect(input.validate(255)).to.be.true;
+        expect(input.validate('255')).to.be.true;
+
+        expect(input.validate(-1)).to.be.false;
+        expect(input.validate(256)).to.be.false;
+        expect(input.validate(300)).to.be.false;
+        expect(input.validate(2550)).to.be.false;
+      });
+    });
+  </script>
+
+</body>
+</html>

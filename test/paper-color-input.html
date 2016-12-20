@@ -1,0 +1,65 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>paper-color-input test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../paper-color-input.html">
+</head>
+<body>
+
+  <test-fixture id="default">
+    <template>
+      <paper-color-input></paper-color-input>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('basic functionality', function () {
+
+      context('defaults', function () {
+        it('should set default values', function () {
+          var element = fixture('default');
+
+          expect(element.label).to.be.empty;
+          expect(element.shape).to.equal('circle');
+          expect(element.type).to.equal('hsb');
+          expect(element.showAlpha).to.be.false;
+          expect(element.alwaysShowAlpha).to.be.false;
+          expect(element.withDescription).to.be.false;
+          expect(element.withBackdrop).to.be.false;
+          expect(element.description).to.be.empty;
+          expect(element.red).to.be.undefined;
+          expect(element.green).to.be.undefined;
+          expect(element.blue).to.be.undefined;
+          expect(element.hue).to.be.undefined;
+          expect(element.saturation).to.be.undefined;
+          expect(element.luminosity).to.be.undefined;
+          expect(element.brightness).to.be.undefined;
+          expect(element.alpha).to.equal(1);
+        });
+      });
+
+      context('label', function () {
+        it('should allow you to set the label', function () {
+          var element = fixture('default');
+
+          element.label = 'Select a color';
+          var label = Polymer.dom(element.root).querySelector('label');
+          expect(label.innerHTML).to.equal(element.label);
+        });
+      });
+
+    });
+  </script>
+
+</body>
+</html>

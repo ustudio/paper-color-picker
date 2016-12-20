@@ -1,0 +1,152 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>paper-color-picker-behavior test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../tinycolor/dist/tinycolor-min.js"></script>
+
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../paper-color-picker-behavior.html">
+  <link rel="import" href="fixtures/paper-color-picker-behavior-implementer.html">
+</head>
+<body>
+
+  <test-fixture id="defaults">
+    <template>
+      <paper-color-picker-behavior-implementer>
+      </paper-color-picker-behavior-implementer>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="rgb">
+    <template>
+      <paper-color-picker-behavior-implementer
+        red="239"
+        green="83"
+        blue="35">
+      </paper-color-picker-behavior-implementer>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="hex">
+    <template>
+      <paper-color-picker-behavior-implementer
+        hex="#EF5323">
+      </paper-color-picker-behavior-implementer>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('basic functionality', function () {
+
+      function colorTest (element, color) {
+        var tc = tinycolor(color);
+        var hex = tc.toHexString().toUpperCase();
+        var rgb = tc.toRgb();
+        var hsl = tc.toHsl();
+        var hsv = tc.toHsv();
+
+        expect(element.hex).to.equal(hex);
+        expect(element.red).to.equal(rgb.r);
+        expect(element.green).to.equal(rgb.g);
+        expect(element.blue).to.equal(rgb.b);
+
+        expect(element.hue).to.be.closeTo(hsl.h, 0.2);
+        expect(element.saturation).to.be.closeTo(hsl.s, 0.1);
+        expect(element.luminosity).to.be.closeTo(hsl.l, 0.1);
+        expect(element.brightness).to.be.closeTo(hsv.v, 0.1);
+      };
+
+      it('should have default values', function () {
+        var element = fixture('defaults');
+
+        expect(element.red).to.be.undefined;
+        expect(element.green).to.be.undefined;
+        expect(element.blue).to.be.undefined;
+        expect(element.hex).to.be.undefined;
+        expect(element.hue).to.be.undefined;
+        expect(element.saturation).to.be.undefined;
+        expect(element.brightness).to.be.undefined;
+        expect(element.luminosity).to.be.undefined;
+        expect(element.alpha).to.equal(1);
+      });
+
+      context('RGB', function () {
+        var element;
+
+        beforeEach(function () {
+          element = fixture('rgb');
+          element._onRGBChanged(element.red, element.green, element.blue);
+        });
+
+        it('should initialize values correctly', function () {
+          colorTest(element, { r: 239, g: 83, b: 35 });
+        });
+
+        it('should set computed values correctly', function () {
+          assert.equal(element.name, 'Flame');
+          assert.equal(element.backgroundStyle, 'background: rgb(239, 83, 35)');
+        });
+
+        it('should update other values when red value changes', function () {
+          var red = 128, green = element.green, blue = element.blue;
+
+          element.red = red;
+          element._onRGBChanged(red, green, blue);
+          colorTest(element, { r: red, g: green, b: blue });
+        });
+
+        it('should update other values when green value changes', function () {
+          var red = element.red, green = 255, blue = element.blue;
+
+          element.green = green;
+          element._onRGBChanged(red, green, blue);
+          colorTest(element, { r: red, g: green, b: blue });
+        });
+
+        it('should update other values when blue value changes', function () {
+          var red = element.red, green = element.green, blue = 80;
+
+          element.blue = blue;
+          element._onRGBChanged(red, green, blue);
+          colorTest(element, { r: red, g: green, b: blue });
+        });
+      });
+
+      context('hex', function () {
+        var element;
+        var hex;
+
+        beforeEach(function () {
+          element = fixture('hex');
+          element._onHexChanged(element.hex);
+        });
+
+        it('should initialize values correctly', function () {
+          colorTest(element, '#EF5323');
+        });
+
+        it('should set computed values correctly', function () {
+          assert.equal(element.title, 'Flame');
+          assert.equal(element.titleStyle, 'color: #000000');
+        });
+
+        it('should update other values when hex value changes', function () {
+          var hex = '#00FF00';
+
+          element.hex = hex;
+          element._onHexChanged(hex);
+          colorTest(element, hex);
+        });
+      });
+
+    });
+  </script>
+
+</body>
+</html>

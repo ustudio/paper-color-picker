@@ -1,0 +1,128 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>hex-input test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../hex-input.html">
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <hex-input></hex-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="label">
+    <template>
+      <hex-input label="foo"></hex-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="error">
+    <template>
+      <hex-input value="foobar" error-message="error"></hex-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="validator">
+    <template>
+      <hex-input value="jklmnop123"></hex-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="value">
+    <template>
+      <hex-input value="#c03030"></hex-input>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('basic functionality', function () {
+
+      it('should default to essentially an empty value', function () {
+        var element = fixture('basic');
+        expect(element.value).to.be.equal('#');
+      });
+
+      it('should allow you to set the value', function () {
+        var element = fixture('value');
+        expect(element.value).to.equal('#c03030');
+      });
+
+      it('should allow you to assign a value', function () {
+        var element = fixture('basic');
+        element.value = '6480ed';
+        expect(element.inputElement.value).to.equal('#6480ED');
+      });
+
+      it('should display an error message when appropriate', function () {
+        var element = fixture('error');
+        forceXIfStamp(element);
+        var error = Polymer.dom(element.root).querySelector('paper-input-error');
+        expect(error).to.not.be.empty;
+        expect(getComputedStyle(error).display).to.not.equal('none');
+      });
+
+    });
+
+    describe('label', function () {
+
+      it('should have a default value', function () {
+        var element = fixture('basic');
+        expect(element.label).to.equal('Hex Value');
+      });
+
+      it('should allow you to set the label', function () {
+        var element = fixture('label');
+        expect(element.label).to.equal('foo');
+      });
+
+      it('should allow you to change the label', function () {
+        var element = fixture('label');
+        element.label = 'Enter a hexadecimal value';
+        expect(element.label).to.equal('Enter a hexadecimal value');
+      });
+
+    });
+
+    describe('validation', function () {
+
+      it('should use the validator', function () {
+        var element = fixture('validator');
+        expect(element.inputElement.invalid).to.be.true;
+      });
+
+      it('should set the invalid attribute if invalid', function() {
+        var element = fixture('validator');
+        expect(element.invalid).to.be.true;
+      });
+
+      it('should not set the invalid attribute if valid', function() {
+        var element = fixture('value');
+        expect(element.invalid).to.be.false;
+      });
+
+      it('should update the invalid attribute on value changes', function() {
+        var element = fixture('value');
+        expect(element.invalid).to.be.false;
+        element.value = 'foobar';
+        expect(element.invalid).to.be.true;
+        element.value = '#fcAB67';
+        expect(element.invalid).to.be.false;
+      });
+
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>hex-validator test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../hex-validator.html">
+  <link rel="import" href="fixtures/hex-validatable.html">
+</head>
+<body>
+
+  <test-fixture id="hex-validator">
+    <template>
+      <hex-validator></hex-validator>
+      <hex-validatable></hex-validatable>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('basic functionality', function () {
+      it('should validate values', function () {
+        var node = fixture('hex-validator');
+        var input = node[1];
+
+        input.validator = 'hex-validator';
+
+        expect(input.validate('000000')).to.be.true;
+        expect(input.validate('#000000')).to.be.true;
+        expect(input.validate('Fe0ab8')).to.be.true;
+        expect(input.validate('#Fe0ab8')).to.be.true;
+
+        expect(input.validate('')).to.be.false;
+        expect(input.validate('#00000')).to.be.false;
+        expect(input.validate('0000')).to.be.false;
+        expect(input.validate('00000')).to.be.false;
+        expect(input.validate('H00000')).to.be.false;
+        expect(input.validate('#Fe0ab82')).to.be.false;
+        expect(input.validate('glorp!')).to.be.false;
+      });
+    });
+  </script>
+
+</body>
+</html>

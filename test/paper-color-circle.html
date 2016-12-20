@@ -1,0 +1,43 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>paper-color-circle test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../paper-color-circle.html">
+</head>
+<body>
+
+  <test-fixture id="default">
+    <template>
+      <paper-color-circle></paper-color-circle>
+    </template>
+  </test-fixture>
+
+  <script>
+    describe('basic functionality', function () {
+
+      context('defaults', function () {
+        it('should set default values', function () {
+          var element = fixture('default');
+
+          expect(element.noAaBorder).to.be.false;
+          expect(element.coloredAaBorder).to.be.false;
+          expect(element.shape).to.equal('circle');
+          expect(element.type).to.equal('hsb');
+        });
+      });
+
+    });
+  </script>
+
+</body>
+</html>

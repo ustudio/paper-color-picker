@@ -1,0 +1,19 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-validator-behavior/iron-validator-behavior.html">
+
+<script>
+  Polymer({
+
+    is: 'rgb-component-validator',
+
+    behaviors: [
+      Polymer.IronValidatorBehavior
+    ],
+
+    validate: function(value) {
+      value = parseInt(value, 10);
+      return value >= 0 && value <= 255;
+    }
+
+  });
+</script>

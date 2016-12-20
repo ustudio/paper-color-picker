@@ -1,0 +1,22 @@
+machine:
+  node:
+    version: 6.1.0
+
+dependencies:
+  cache_directories:
+    - bower_components
+  pre:
+    - npm install -g bower web-component-tester
+    - bower install
+  post:
+    - bower ls
+
+test:
+  override:
+    - wct --expanded -l all
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master

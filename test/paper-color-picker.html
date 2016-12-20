@@ -1,0 +1,78 @@
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>paper-color-picker test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/test-helpers.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../paper-color-picker.html">
+</head>
+<body>
+
+  <test-fixture id="picker">
+    <template>
+      <paper-color-picker
+        entry-animation="transform-automation"
+        exit-animation="transform-automation"
+        hex="#EF5323"
+      ></paper-color-picker>
+    </template>
+  </test-fixture>
+
+  <script>
+
+    describe('state management', function () {
+
+      function runAfterOpen (dialog, callback) {
+        dialog.addEventListener('iron-overlay-opened', callback);
+        dialog.open();
+      }
+
+      var element;
+      var cancelSpy;
+      var acceptSpy;
+      var resetSpy;
+
+      beforeEach(function () {
+        element = fixture('picker');
+        cancelSpy = sinon.spy();
+        acceptSpy = sinon.spy(element, 'acceptChanges');
+        resetSpy = sinon.spy(element, 'resetState');
+        element.addEventListener('iron-overlay-canceled', cancelSpy);
+      });
+
+      it('should reset state when changes are canceled', function (done) {
+        runAfterOpen(element, function () {
+          MockInteractions.tap(
+            Polymer.dom(element.root).querySelector('[dialog-dismiss]')
+          );
+          expect(cancelSpy).to.have.been.called;
+          expect(resetSpy).to.have.been.called;
+          expect(acceptSpy).to.not.have.been.called;
+          done();
+        });
+      });
+
+      it('should preserve state when changes are accepted', function (done) {
+        runAfterOpen(element, function () {
+          MockInteractions.tap(
+            Polymer.dom(element.root).querySelector('[dialog-confirm]')
+          );
+          expect(cancelSpy).to.not.have.been.called;
+          expect(resetSpy).to.not.have.been.called;
+          expect(acceptSpy).to.have.been.called;
+          done();
+        });
+      });
+
+    });
+  </script>
+
+</body>
+</html>
