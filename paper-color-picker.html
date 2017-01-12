@@ -238,7 +238,9 @@ and to open the dialog
                 step="0.01"
                 secondary-progress="[[ _initialState.brightness ]]"
                 value="{{ brightness }}"
-                immediate-value="{{ brightness }}">
+                immediate-value="{{ brightness }}"
+                on-change="_onBrightnessChange"
+                on-immediate-value-change="_onBrightnessImmediateChange">
               </paper-slider>
             </paper-input-container>
           </template>
@@ -253,8 +255,8 @@ and to open the dialog
                 max="1"
                 step="0.01"
                 secondary-progress="[[ _initialState.luminosity ]]"
-                value="{{ luminosity }}"
-                immediate-value="{{ luminosity }}">
+                value="[[ luminosity ]]"
+                immediate-value="[[ luminosity ]]">
               </paper-slider>
             </paper-input-container>
           </template>
@@ -464,7 +466,9 @@ and to open the dialog
         '_onRGBChanged(red, green, blue)',
         '_onHexChanged(hex)',
         '_onHSBChanged(hue, saturation, brightness)',
-        '_onHSLChanged(hue, saturation, luminosity)'
+        '_onHSLChanged(hue, saturation, luminosity)',
+        '_onBrightnessChanged(brightness)',
+        '_onLuminosityChanged(luminosity)'
       ],
 
       listeners: {
@@ -496,6 +500,22 @@ and to open the dialog
         this.saveState();
       },
 
+      _onBrightnessChange(brightness) {
+        console.log("Brightness change", brightness);
+      },
+
+      _onBrightnessImmediateChange(brightness) {
+        console.log("Brightness immediate change", brightness);
+      },
+
+      _onBrightnessChanged(brightness) {
+        console.log("Brightness", brightness);
+      },
+
+      _onLuminosityChanged(luminosity) {
+        console.log("Luminosity", luminosity);
+      },
+
       _onResize: function () {
         this.$.dialog.refit();
       },
@@ -521,6 +541,7 @@ and to open the dialog
        * Save the state of the color picker if we decide to cancel changes.
        */
       saveState: function () {
+        console.log("saving state", this.hex);
         this.set('_initialState', {
           red: this.red,
           green: this.green,
@@ -533,6 +554,7 @@ and to open the dialog
           alpha: this.alpha,
           advanced: this.advanced
         });
+        console.log("saved state", this.hex);
       },
 
       /**
@@ -597,7 +619,9 @@ and to open the dialog
        */
       open: function () {
         this.saveState();
+        console.log("opening dialog", this.hex);
         this.$.dialog.open();
+        console.log("dialog open called", this.hex);
       },
 
       /**
