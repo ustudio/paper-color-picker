@@ -17,7 +17,7 @@
   "license": "https://github.com/ustudio/paper-color-picker/blob/master/LICENSE",
   "dependencies": {
     "paper-dialog": "PolymerElements/paper-dialog#^1.1.0",
-    "paper-slider": "PolymerElements/paper-slider#^1.0.12",
+    "paper-slider": "git://github.com/ustudio/paper-slider#better-markers",
     "neon-animation": "PolymerElements/neon-animation#^1.2.4",
     "paper-styles": "PolymerElements/paper-styles#^1.1.5",
     "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^1.0.6",
