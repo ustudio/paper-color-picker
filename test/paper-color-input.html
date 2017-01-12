@@ -13,12 +13,19 @@
 
   <link rel="import" href="../../polymer/polymer.html">
   <link rel="import" href="../paper-color-input.html">
+  <link rel="import" href="input-host-element.html">
 </head>
 <body>
 
   <test-fixture id="default">
     <template>
       <paper-color-input></paper-color-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="hex">
+    <template>
+      <input-host-element value="#000000"></input-host-element>
     </template>
   </test-fixture>
 
@@ -55,6 +62,21 @@
           element.label = 'Select a color';
           var label = Polymer.dom(element.root).querySelector('label');
           expect(label.innerHTML).to.equal(element.label);
+        });
+      });
+
+      context('hex', function() {
+        it('should enable two-way binding of hex property', function() {
+          var element = fixture('hex');
+          var input = element.$.input;
+          var confirm = Polymer.dom(input.$.picker.root).querySelector('[dialog-confirm]');
+
+          MockInteractions.tap(input);
+          input.$.picker.$['hex-input'].value = '#FFFFFF';
+          MockInteractions.tap(confirm);
+          Polymer.dom.flush();
+
+          expect(element.value).to.equal('#FFFFFF');
         });
       });
 
