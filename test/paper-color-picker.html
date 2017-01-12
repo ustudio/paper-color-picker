@@ -30,7 +30,12 @@
     describe('state management', function () {
 
       function runAfterOpen (dialog, callback) {
-        dialog.addEventListener('iron-overlay-opened', callback);
+        var listener = function() {
+          dialog.removeEventListener('iron-overlay-opened', listener);
+          callback.apply(null, arguments);
+        };
+
+        dialog.addEventListener('iron-overlay-opened', listener);
         dialog.open();
       }
 
@@ -71,6 +76,25 @@
         });
       });
 
+      it('should preserve color across edits', function(done) {
+        console.log("setting value", element.hex);
+        element.hex = '#33E6E1';
+        console.log("set value", element.hex);
+
+        runAfterOpen(element, function() {
+          console.log("dialog open", element.hex);
+          MockInteractions.tap(
+            Polymer.dom(element.root).querySelector('[dialog-confirm]')
+          );
+          console.log("confirmed dialog", element.hex);
+
+          Polymer.dom.flush();
+          console.log("flushed", element.hex);
+
+          expect(element.hex).to.equal('#33E6E1');
+          done();
+        });
+      });
     });
   </script>
 
