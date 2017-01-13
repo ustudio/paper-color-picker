@@ -25,20 +25,29 @@
     </template>
   </test-fixture>
 
+  <test-fixture id="hsl-picker">
+    <template>
+      <paper-color-picker
+        entry-animation="transform-automation"
+        exit-animation="transform-automation"
+        type="hsl"
+        hex="#EF5323"
+      ></paper-color-picker>
+    </template>
+  </test-fixture>
+
   <script>
+    function runAfterOpen (dialog, callback) {
+      var listener = function() {
+        dialog.removeEventListener('iron-overlay-opened', listener);
+        callback.apply(null, arguments);
+      };
 
-    describe('state management', function () {
+      dialog.addEventListener('iron-overlay-opened', listener);
+      dialog.open();
+    }
 
-      function runAfterOpen (dialog, callback) {
-        var listener = function() {
-          dialog.removeEventListener('iron-overlay-opened', listener);
-          callback.apply(null, arguments);
-        };
-
-        dialog.addEventListener('iron-overlay-opened', listener);
-        dialog.open();
-      }
-
+    describe('paper-color-picker', function () {
       var element;
       var cancelSpy;
       var acceptSpy;
@@ -77,22 +86,126 @@
       });
 
       it('should preserve color across edits', function(done) {
-        console.log("setting value", element.hex);
         element.hex = '#33E6E1';
-        console.log("set value", element.hex);
 
         runAfterOpen(element, function() {
-          console.log("dialog open", element.hex);
           MockInteractions.tap(
             Polymer.dom(element.root).querySelector('[dialog-confirm]')
           );
-          console.log("confirmed dialog", element.hex);
 
           Polymer.dom.flush();
-          console.log("flushed", element.hex);
 
           expect(element.hex).to.equal('#33E6E1');
           done();
+        });
+      });
+
+      it('should update color when brightness slider is changed by user', function(done) {
+        runAfterOpen(element, function() {
+          var brightnessSlider = element.querySelector('#brightness-slider');
+          var sliderBar = brightnessSlider.$.sliderBar
+          var sliderRect = sliderBar.getBoundingClientRect();
+          var left = {
+            x: sliderRect.left + 4,
+            y: sliderRect.top + (sliderRect.height / 2)
+          }
+
+          MockInteractions.down(sliderBar, left);
+
+          flush(function() {
+            expect(element.brightness).to.equal(0.02);
+
+            done();
+          });
+        });
+      });
+
+      it('should update color while user is dragging brightness slider', function(done) {
+        runAfterOpen(element, function() {
+          var brightnessSlider = element.querySelector('#brightness-slider');
+          var sliderKnob = brightnessSlider.$.sliderKnob;
+          var sliderRect = brightnessSlider.$.sliderBar.getBoundingClientRect();
+
+          var start = MockInteractions.middleOfNode(sliderKnob);
+          var end = {
+            x: sliderRect.left + 4,
+            y: sliderRect.top + (sliderRect.height / 2)
+          }
+
+          MockInteractions.down(sliderKnob, start);
+          MockInteractions.move(sliderKnob, start, end);
+
+          flush(function() {
+            expect(element.brightness).to.equal(0.02);
+
+            done();
+          });
+        });
+      });
+    });
+
+    describe('HSL mode paper-color-picker', function () {
+      var element;
+
+      beforeEach(function () {
+        element = fixture('hsl-picker');
+      });
+
+      it('should preserve color across edits', function(done) {
+        element.hex = '#005A00';
+
+        runAfterOpen(element, function() {
+          MockInteractions.tap(
+            Polymer.dom(element.root).querySelector('[dialog-confirm]')
+          );
+
+          Polymer.dom.flush();
+
+          expect(element.hex).to.equal('#005A00');
+          done();
+        });
+      });
+
+      it('should update color when luminosity slider is changed by user', function(done) {
+        runAfterOpen(element, function() {
+          var luminositySlider = element.querySelector('#luminosity-slider');
+          var sliderBar = luminositySlider.$.sliderBar
+          var sliderRect = sliderBar.getBoundingClientRect();
+          var left = {
+            x: sliderRect.left + 4,
+            y: sliderRect.top + (sliderRect.height / 2)
+          }
+
+          MockInteractions.down(sliderBar, left);
+
+          flush(function() {
+            expect(element.luminosity).to.equal(0.02);
+
+            done();
+          });
+        });
+      });
+
+      it('should update color while user is dragging luminosity slider', function(done) {
+        runAfterOpen(element, function() {
+          var luminositySlider = element.querySelector('#luminosity-slider');
+          var sliderKnob = luminositySlider.$.sliderKnob;
+          var sliderRect = luminositySlider.$.sliderBar.getBoundingClientRect();
+
+          var start = MockInteractions.middleOfNode(sliderKnob);
+          var end = {
+            x: sliderRect.left + 4,
+            y: sliderRect.top + (sliderRect.height / 2)
+          }
+
+          MockInteractions.down(sliderKnob, start);
+          MockInteractions.move(sliderKnob, start, end);
+
+          flush(function() {
+            expect(element.luminosity).to.equal(0.02);
+
+            done();
+          });
         });
       });
     });

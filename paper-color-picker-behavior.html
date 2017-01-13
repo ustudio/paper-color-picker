@@ -3556,36 +3556,26 @@
     // update related values
 
     _updateHex: function (hex) {
-      console.log("Updating hex", hex);
       var rgb = this._convertHexToRGB(hex);
       var hsb = this._convertHexToHSB(hex);
       var hsl = this._convertHexToHSL(hex);
 
-      console.log("Converted values", rgb, hsb, hsl);
-
       this._setRGB(rgb);
       this._setHSB(hsb);
       this._setHSL(hsl);
-
-      console.log("Updated hex", this.hex, this.red, this.green, this.blue);
     },
 
     _updateHSB: function (hue, saturation, brightness) {
-      console.log("updating hsb", this.hex, hue, saturation, brightness);
       var rgb = this._convertHSBtoRGB(hue, saturation, brightness);
       var hex = this._convertHSBtoHex(hue, saturation, brightness);
       var hsl = this._convertHSBtoHSL(hue, saturation, brightness);
 
-      console.log("Converted values", rgb, hex, hsl);
-
       this._setRGB(rgb);
       this._setHex(hex);
       this._setHSL(hsl);
-      console.log("updated hsb", this.hex);
     },
 
     _updateHSL: function (hue, saturation, luminosity) {
-      console.log("updating hsl", this.hex);
       var rgb = this._convertHSLtoRGB(hue, saturation, luminosity);
       var hex = this._convertHSLtoHex(hue, saturation, luminosity);
       var hsb = this._convertHSLtoHSB(hue, saturation, luminosity);
@@ -3593,12 +3583,9 @@
       this._setRGB(rgb);
       this._setHex(hex);
       this._setHSB(hsb);
-      console.log("updated hsl", this.hex);
     },
 
     _updateRGB: function (red, green, blue) {
-      console.log("updating rgb", this.hex);
-
       var hex = this._convertRGBtoHex(red, green, blue);
       var hsb = this._convertRGBtoHSB(red, green, blue);
       var hsl = this._convertRGBtoHSL(red, green, blue);
@@ -3606,7 +3593,6 @@
       this._setHex(hex);
       this._setHSB(hsb);
       this._setHSL(hsl);
-      console.log("updated rgb", this.hex);
     },
 
     // hex conversions
