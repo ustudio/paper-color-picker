@@ -47,6 +47,14 @@
       dialog.open();
     }
 
+   function sliderLeft(sliderBar) {
+     var sliderRect = sliderBar.getBoundingClientRect();
+     return {
+       x: sliderRect.left + (sliderRect.width * 0.02),
+       y: sliderRect.top + (sliderRect.height / 2)
+     }
+   }
+
     describe('paper-color-picker', function () {
       var element;
       var cancelSpy;
@@ -104,11 +112,7 @@
         runAfterOpen(element, function() {
           var brightnessSlider = element.querySelector('#brightness-slider');
           var sliderBar = brightnessSlider.$.sliderBar
-          var sliderRect = sliderBar.getBoundingClientRect();
-          var left = {
-            x: sliderRect.left + 4,
-            y: sliderRect.top + (sliderRect.height / 2)
-          }
+          var left = sliderLeft(sliderBar);
 
           MockInteractions.down(sliderBar, left);
 
@@ -124,13 +128,9 @@
         runAfterOpen(element, function() {
           var brightnessSlider = element.querySelector('#brightness-slider');
           var sliderKnob = brightnessSlider.$.sliderKnob;
-          var sliderRect = brightnessSlider.$.sliderBar.getBoundingClientRect();
 
           var start = MockInteractions.middleOfNode(sliderKnob);
-          var end = {
-            x: sliderRect.left + 4,
-            y: sliderRect.top + (sliderRect.height / 2)
-          }
+          var end = sliderLeft(brightnessSlider.$.sliderBar);
 
           MockInteractions.down(sliderKnob, start);
           MockInteractions.move(sliderKnob, start, end);
@@ -170,11 +170,7 @@
         runAfterOpen(element, function() {
           var luminositySlider = element.querySelector('#luminosity-slider');
           var sliderBar = luminositySlider.$.sliderBar
-          var sliderRect = sliderBar.getBoundingClientRect();
-          var left = {
-            x: sliderRect.left + 4,
-            y: sliderRect.top + (sliderRect.height / 2)
-          }
+          var left = sliderLeft(sliderBar);
 
           MockInteractions.down(sliderBar, left);
 
@@ -190,13 +186,9 @@
         runAfterOpen(element, function() {
           var luminositySlider = element.querySelector('#luminosity-slider');
           var sliderKnob = luminositySlider.$.sliderKnob;
-          var sliderRect = luminositySlider.$.sliderBar.getBoundingClientRect();
 
           var start = MockInteractions.middleOfNode(sliderKnob);
-          var end = {
-            x: sliderRect.left + 4,
-            y: sliderRect.top + (sliderRect.height / 2)
-          }
+          var end = sliderLeft(luminositySlider.$.sliderBar);
 
           MockInteractions.down(sliderKnob, start);
           MockInteractions.move(sliderKnob, start, end);
