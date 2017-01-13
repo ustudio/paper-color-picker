@@ -37,6 +37,10 @@
       .buttons {
         padding-left: 20px;
       }
+
+      .dark-background paper-dialog {
+        background-color: #333333;
+      }
     </style>
 
   </head>
@@ -60,6 +64,13 @@
             Standard dialog with backdrop
           </paper-button>
           <paper-color-picker with-backdrop></paper-color-picker>
+        </div>
+
+        <div class="dark-background">
+          <paper-button  onclick="this.parentElement.querySelector('paper-color-picker').open()">
+            Standard dialog with dark background
+          </paper-button>
+          <paper-color-picker></paper-color-picker>
         </div>
 
         <div>

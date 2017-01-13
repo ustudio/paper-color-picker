@@ -200,7 +200,7 @@
             for (var x = 0; x < this._size; x++) {
               // offset for the 4 RGBA values in the data array
               var offset = 4 * ((y * this._size) + x);
-              var color = { r: 255, g: 255, b: 255, a: 1 };
+              var color = { r: 255, g: 255, b: 255, a: 0 };
 
               if (this.shape === 'circle') {
                 var distanceFromCenter = Math.sqrt(
@@ -248,7 +248,7 @@
               bitmap.data[offset + 0] = color.r;
               bitmap.data[offset + 1] = color.g;
               bitmap.data[offset + 2] = color.b;
-              bitmap.data[offset + 3] = 255; // no transparency
+              bitmap.data[offset + 3] = color.a * 255;
             };
           };
 

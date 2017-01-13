@@ -34,6 +34,26 @@
           expect(element.shape).to.equal('circle');
           expect(element.type).to.equal('hsb');
         });
+
+        it('should draw opaque circle with transparent background', function(done) {
+          var element = fixture('default');
+
+          element.ready();
+
+          element.async(function () {
+            var canvas = element.$.canvas;
+            var rect = canvas.getBoundingClientRect();
+            var context = canvas.getContext("2d");
+
+            var topLeft = context.getImageData(0, 0, 1, 1);
+            var middle = context.getImageData(rect.width / 2, rect.height / 2, 1, 1);
+
+            expect(topLeft.data[3]).to.equal(0);
+            expect(middle.data[3]).to.equal(255);
+
+            done();
+          }, 10);
+        });
       });
 
     });
