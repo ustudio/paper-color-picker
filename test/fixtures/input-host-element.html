@@ -10,7 +10,10 @@
     Polymer({
       is: 'input-host-element',
       properties: {
-        value: String
+        value: {
+          type: String,
+          notify: true
+        }
       }
     });
   </script>

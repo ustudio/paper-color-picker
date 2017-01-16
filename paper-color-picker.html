@@ -478,7 +478,16 @@ and to open the dialog
         'color-picked': '_onColorPicked'
       },
 
+      created: function() {
+        console.log('CREATED');
+      },
+
+      ready: function() {
+        console.log('READY');
+      },
+
       attached: function () {
+        console.log('ATTACHED');
         if (this.hex !== undefined) {
           this._onHexChanged(this.hex);
         }
@@ -498,6 +507,10 @@ and to open the dialog
           this._onHSLChanged(this.hue, this.saturation, this.luminosity);
         }
         this.saveState();
+      },
+
+      detached: function() {
+        console.log('DETACHED');
       },
 
       _onBrightnessChange(event) {
@@ -529,7 +542,8 @@ and to open the dialog
       },
 
       _onColorPicked: function (e, rgb) {
-        this._setRGB(rgb);
+        console.log('paper-color-picker color-picked');
+        // this._setRGB(rgb);
       },
 
       cancelChanges: function (e) {
@@ -654,7 +668,6 @@ and to open the dialog
       // computed values
 
       _computePercentage: function (value) {
-        return Math.round(value * 100) + '%';
       }
 
     });

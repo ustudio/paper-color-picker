@@ -43,10 +43,10 @@
           expect(element.alwaysShowAlpha).to.be.false;
           expect(element.withDescription).to.be.false;
           expect(element.withBackdrop).to.be.false;
-          expect(element.description).to.be.empty;
-          expect(element.red).to.be.undefined;
-          expect(element.green).to.be.undefined;
-          expect(element.blue).to.be.undefined;
+          expect(element.description).to.equal('#');
+          expect(element.red).to.be.NaN;
+          expect(element.green).to.be.NaN;
+          expect(element.blue).to.be.NaN;
           expect(element.hue).to.be.undefined;
           expect(element.saturation).to.be.undefined;
           expect(element.luminosity).to.be.undefined;
@@ -65,18 +65,48 @@
         });
       });
 
-      context('hex', function() {
+      context('clicking OK after changing the hex value', function() {
+        var hexChanges;
+        var element;
+        var input;
+        var confirm;
+
+        function valueChanged(event) {
+          hexChanges.push(event.detail.value);
+        };
+
+        beforeEach(function(done) {
+          hexChanges = [];
+          element = fixture('hex');
+          input = element.$.input;
+          confirm = Polymer.dom(input.$.picker.root).querySelector('[dialog-confirm]');
+
+          element.addEventListener('value-changed', valueChanged);
+
+          //MockInteractions.tap(input);
+          input.openColorPicker();
+          flush(function() {
+            input.$.picker.$['hex-input'].value = '#111445';
+            flush(function() {
+              //MockInteractions.tap(confirm);
+              confirm.click();
+              flush(function() {
+                done();
+              });
+            });
+          });
+        });
+
         it('should enable two-way binding of hex property', function() {
-          var element = fixture('hex');
-          var input = element.$.input;
-          var confirm = Polymer.dom(input.$.picker.root).querySelector('[dialog-confirm]');
+          expect(element.value).to.equal('#111445');
+        });
 
-          MockInteractions.tap(input);
-          input.$.picker.$['hex-input'].value = '#FFFFFF';
-          MockInteractions.tap(confirm);
-          Polymer.dom.flush();
+        it('should change the hex value exactly once', function() {
+          expect(hexChanges).to.deep.equal(['#111445']);
+        });
 
-          expect(element.value).to.equal('#FFFFFF');
+        it('should update the color preview', function() {
+          expect(input.$['color-preview'].querySelector('#color').style['background-color']).to.equal('rgb(17, 20, 69)');
         });
       });
 

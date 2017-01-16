@@ -106,11 +106,6 @@ from the `hsb`/`hsv` or `hsl` color space.
       ],
 
       properties: {
-        hex: {
-          type: String,
-          notify: true
-        },
-
         /**
          * The label for this input.
          */
@@ -213,8 +208,9 @@ from the `hsb`/`hsv` or `hsl` color space.
       },
 
       updateColor: function (e, detail) {
-        this._setRGB(detail);
-        this._onRGBChanged(detail.r, detail.g, detail.b);
+        console.log('paper-color-input color-picked');
+        /*this._setRGB(detail);
+        this._onRGBChanged(detail.r, detail.g, detail.b);*/
       },
 
       // computed values
